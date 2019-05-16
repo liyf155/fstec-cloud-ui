@@ -69,6 +69,13 @@ module.exports = {
         pathRewrite: {
           '^/platform': '/platform'
         }
+      },
+      '/checkin': {
+        target: baseUrl,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/checkin': '/checkin'
+        }
       }
     },
     cssSourceMap: false
