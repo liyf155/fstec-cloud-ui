@@ -14,7 +14,7 @@
         </div>
         <el-table :key='tableKey' :data="list" v-loading.body="listLoading" element-loading-text="正在加载..." border fit
                   highlight-current-row style="width: 99%">
-            <el-table-column align="center" label="行政编码" width="65">
+            <el-table-column align="center" label="行政编码">
                 <template slot-scope="scope">
                     <span>{{scope.row.areaCode}}</span>
                 </template>
@@ -131,7 +131,7 @@
     getAdministrative,
     delAdministrative,
     updAdministrative
-  } from '@/api/checkin/administrative'
+  } from '@/api/base/administrative'
   import { mapGetters } from 'vuex'
   import waves from '@/directive/waves/index.js' // 水波纹
   export default {

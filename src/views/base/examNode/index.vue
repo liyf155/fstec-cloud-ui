@@ -79,21 +79,7 @@
                     <span>{{scope.row.createTime}}</span>
                 </template>
             </el-table-column>
-            <el-table-column align="center" label="修改人">
-                <template slot-scope="scope">
-                    <span>{{scope.row.updateBy}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="修改时间">
-                <template slot-scope="scope">
-                    <span>{{scope.row.updateTime}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="删除状态 0-未删除 1-逻辑删除处理 2-逻辑删除完成">
-                <template slot-scope="scope">
-                    <span>{{scope.row.delFlag}}</span>
-                </template>
-            </el-table-column>
+
             <el-table-column fixed="right" align="center" label="操作" width="150">
                 <template slot-scope="scope">
                     <el-button v-if="mt_examNode_edit" size="small" type="success" @click="handleUpdate(scope.row)">编辑
@@ -176,7 +162,7 @@
 </template>
 
 <script>
-  import { getExamNodesByPage, addExamNode, getExamNode, delExamNode, updExamNode } from '@/api/checkin/examNode'
+  import { getExamNodesByPage, addExamNode, getExamNode, delExamNode, updExamNode } from '@/api/base/examNode'
   import { mapGetters } from 'vuex'
   import waves from '@/directive/waves/index.js' // 水波纹
   export default {

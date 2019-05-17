@@ -28,7 +28,7 @@
         <el-card class="box-card">
           <el-form :label-position="labelPosition" label-width="80px" :model="form" ref="form">
             <el-form-item label="父级节点" prop="parentId">
-              <el-input v-model="form.parentId" :disabled="true" placeholder="请输入父级节点"></el-input>
+              <el-input v-model="form.parentId" placeholder="请输入父级节点"></el-input>
             </el-form-item>
             <el-form-item label="节点ID" prop="menuId">
               <el-input v-model="form.menuId" :disabled="formEdit" placeholder="请输入节点ID"></el-input>
@@ -61,7 +61,7 @@
             <el-form-item label="前端地址" prop="component">
               <el-input v-model="form.path" :disabled="formEdit" placeholder="iframe嵌套地址"></el-input>
             </el-form-item>
-            <el-form-item label="路由缓冲" prop="component"> 
+            <el-form-item label="路由缓冲" prop="component">
               <el-switch v-model="form.keepAlive" :disabled="formEdit" active-color="#13ce66" inactive-color="#ff4949" :active-value='"1"' :inactive-value='"0"'>
               </el-switch>
             </el-form-item>

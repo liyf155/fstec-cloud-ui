@@ -4,9 +4,9 @@ import fetch from '@/router/axios'
  * 分页获取数据
  * @param query
  */
-export function getExamNodesByPage(query) {
+export function getExamItemsByPage(query) {
   return fetch({
-    url: '/checkin/examNode/page',
+    url: '/base/examItem/page',
     method: 'get',
     params: query
   })
@@ -16,9 +16,9 @@ export function getExamNodesByPage(query) {
  * 添加对象
  * @param obj
  */
-export function addExamNode(obj) {
+export function addExamItem(obj) {
   return fetch({
-    url: '/checkin/examNode',
+    url: '/base/examItem',
     method: 'post',
     data: obj
   })
@@ -28,9 +28,9 @@ export function addExamNode(obj) {
  * 通过ID获取对象
  * @param id
  */
-export function getExamNode(id) {
+export function getExamItem(id) {
   return fetch({
-    url: '/checkin/examNode/' + id,
+    url: '/base/examItem/' + id,
     method: 'get'
   })
 }
@@ -39,9 +39,9 @@ export function getExamNode(id) {
  * 通过ID删除对象
  * @param row
  */
-export function delExamNode(id) {
+export function delExamItem(id) {
   return fetch({
-    url: '/checkin/examNode/' + id,
+    url: '/base/examItem/' + id,
     method: 'delete'
   })
 }
@@ -50,9 +50,9 @@ export function delExamNode(id) {
  * 更新对象
  * @param obj
  */
-export function updExamNode(obj) {
+export function updExamItem(obj) {
   return fetch({
-    url: '/checkin/examNode',
+    url: '/base/examItem',
     method: 'put',
     data: obj
   })

@@ -6,7 +6,7 @@ import fetch from '@/router/axios'
  */
 export function getExamSubjectsByPage(query) {
   return fetch({
-    url: '/platform/examSubject/page',
+    url: '/base/examSubject/page',
     method: 'get',
     params: query
   })
@@ -18,7 +18,7 @@ export function getExamSubjectsByPage(query) {
  */
 export function addExamSubject(obj) {
   return fetch({
-    url: '/platform/examSubject',
+    url: '/base/examSubject',
     method: 'post',
     data: obj
   })
@@ -30,7 +30,7 @@ export function addExamSubject(obj) {
  */
 export function getExamSubject(id) {
   return fetch({
-    url: '/platform/examSubject/' + id,
+    url: '/base/examSubject/' + id,
     method: 'get'
   })
 }
@@ -41,7 +41,7 @@ export function getExamSubject(id) {
  */
 export function delExamSubject(id) {
   return fetch({
-    url: '/platform/examSubject/' + id,
+    url: '/base/examSubject/' + id,
     method: 'delete'
   })
 }
@@ -52,7 +52,7 @@ export function delExamSubject(id) {
  */
 export function updExamSubject(obj) {
   return fetch({
-    url: '/platform/examSubject',
+    url: '/base/examSubject',
     method: 'put',
     data: obj
   })

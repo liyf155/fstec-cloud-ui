@@ -49,6 +49,13 @@ module.exports = {
           '^/code': '/code'
         }
       },
+      '/base': {
+        target: baseUrl,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/base': '/base'
+        }
+      },
       '/gen': {
         target: baseUrl,
         changeOrigin: true,

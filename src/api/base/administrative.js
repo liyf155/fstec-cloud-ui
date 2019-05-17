@@ -4,9 +4,9 @@ import fetch from '@/router/axios'
  * 分页获取数据
  * @param query
  */
-export function getExamItemsByPage(query) {
+export function getAdministrativesByPage(query) {
   return fetch({
-    url: '/platform/examItem/page',
+    url: '/base/administrative/page',
     method: 'get',
     params: query
   })
@@ -16,9 +16,9 @@ export function getExamItemsByPage(query) {
  * 添加对象
  * @param obj
  */
-export function addExamItem(obj) {
+export function addAdministrative(obj) {
   return fetch({
-    url: '/platform/examItem',
+    url: '/base/administrative',
     method: 'post',
     data: obj
   })
@@ -28,9 +28,9 @@ export function addExamItem(obj) {
  * 通过ID获取对象
  * @param id
  */
-export function getExamItem(id) {
+export function getAdministrative(id) {
   return fetch({
-    url: '/platform/examItem/' + id,
+    url: '/base/administrative/' + id,
     method: 'get'
   })
 }
@@ -39,9 +39,9 @@ export function getExamItem(id) {
  * 通过ID删除对象
  * @param row
  */
-export function delExamItem(id) {
+export function delAdministrative(id) {
   return fetch({
-    url: '/platform/examItem/' + id,
+    url: '/base/administrative/' + id,
     method: 'delete'
   })
 }
@@ -50,9 +50,9 @@ export function delExamItem(id) {
  * 更新对象
  * @param obj
  */
-export function updExamItem(obj) {
+export function updAdministrative(obj) {
   return fetch({
-    url: '/platform/examItem',
+    url: '/base/administrative',
     method: 'put',
     data: obj
   })

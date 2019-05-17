@@ -4,9 +4,9 @@ import fetch from '@/router/axios'
  * 分页获取数据
  * @param query
  */
-export function getAdministrativesByPage(query) {
+export function getExamNodesByPage(query) {
   return fetch({
-    url: '/checkin/administrative/page',
+    url: '/base/examNode/page',
     method: 'get',
     params: query
   })
@@ -16,9 +16,9 @@ export function getAdministrativesByPage(query) {
  * 添加对象
  * @param obj
  */
-export function addAdministrative(obj) {
+export function addExamNode(obj) {
   return fetch({
-    url: '/checkin/administrative',
+    url: '/base/examNode',
     method: 'post',
     data: obj
   })
@@ -28,9 +28,9 @@ export function addAdministrative(obj) {
  * 通过ID获取对象
  * @param id
  */
-export function getAdministrative(id) {
+export function getExamNode(id) {
   return fetch({
-    url: '/checkin/administrative/' + id,
+    url: '/base/examNode/' + id,
     method: 'get'
   })
 }
@@ -39,9 +39,9 @@ export function getAdministrative(id) {
  * 通过ID删除对象
  * @param row
  */
-export function delAdministrative(id) {
+export function delExamNode(id) {
   return fetch({
-    url: '/checkin/administrative/' + id,
+    url: '/base/examNode/' + id,
     method: 'delete'
   })
 }
@@ -50,9 +50,9 @@ export function delAdministrative(id) {
  * 更新对象
  * @param obj
  */
-export function updAdministrative(obj) {
+export function updExamNode(obj) {
   return fetch({
-    url: '/checkin/administrative',
+    url: '/base/examNode',
     method: 'put',
     data: obj
   })
