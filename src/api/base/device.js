@@ -4,9 +4,9 @@ import fetch from '@/router/axios'
  * 分页获取数据
  * @param query
  */
-export function getCheckinSubjectsByPage(query) {
+export function getDevicesByPage(query) {
   return fetch({
-    url: '/checkin/checkinSubject/page',
+    url: '/base/device/page',
     method: 'get',
     params: query
   })
@@ -16,9 +16,9 @@ export function getCheckinSubjectsByPage(query) {
  * 添加对象
  * @param obj
  */
-export function addCheckinSubject(obj) {
+export function addDevice(obj) {
   return fetch({
-    url: '/checkin/checkinSubject',
+    url: '/base/device',
     method: 'post',
     data: obj
   })
@@ -28,9 +28,9 @@ export function addCheckinSubject(obj) {
  * 通过ID获取对象
  * @param id
  */
-export function getCheckinSubject(id) {
+export function getDevice(id) {
   return fetch({
-    url: '/checkin/checkinSubject/' + id,
+    url: '/base/device/' + id,
     method: 'get'
   })
 }
@@ -39,9 +39,9 @@ export function getCheckinSubject(id) {
  * 通过ID删除对象
  * @param row
  */
-export function delCheckinSubject(id) {
+export function delDevice(id) {
   return fetch({
-    url: '/checkin/checkinSubject/' + id,
+    url: '/base/device/' + id,
     method: 'delete'
   })
 }
@@ -50,9 +50,9 @@ export function delCheckinSubject(id) {
  * 更新对象
  * @param obj
  */
-export function updCheckinSubject(obj) {
+export function updDevice(obj) {
   return fetch({
-    url: '/checkin/checkinSubject',
+    url: '/base/device',
     method: 'put',
     data: obj
   })

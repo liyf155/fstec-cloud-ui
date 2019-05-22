@@ -57,3 +57,13 @@ export function updExamItem(obj) {
     data: obj
   })
 }
+
+/**
+ * 查询所有考试项目
+ */
+export function getExamItemList() {
+  return fetch({
+    url: '/base/examItem/list',
+    method: 'get'
+  })
+}
