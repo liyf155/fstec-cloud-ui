@@ -1,169 +1,154 @@
 <template>
-    <div class="app-container calendar-list-container">
-        <div class="filter-container">
-            <el-form>
-                <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
-                          placeholder="模糊查询" v-model="listQuery.name">
-                </el-input>
-                <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">搜索
-                </el-button>
-                <el-button v-if="mt_examNode_add" class="filter-item" style="margin-left: 10px;" @click="handleCreate"
-                           type="primary" icon="el-icon-plus">添加
-                </el-button>
-            </el-form>
-        </div>
-        <el-table :key='tableKey' :data="list" v-loading.body="listLoading" element-loading-text="正在加载..." border fit
-                  highlight-current-row style="width: 99%">
-            <el-table-column align="center" label="所属省份">
-                <template slot-scope="scope">
-                    <span>{{scope.row.provinceName}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="所属城市">
-                <template slot-scope="scope">
-                    <span>{{scope.row.cityName}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="考点名称">
-                <template slot-scope="scope">
-                    <span>{{scope.row.nodeName}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="考点地址">
-                <template slot-scope="scope">
-                    <span>{{scope.row.address}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="联系人">
-                <template slot-scope="scope">
-                    <span>{{scope.row.linkerName}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="联系电话">
-                <template slot-scope="scope">
-                    <span>{{scope.row.linkerPhone}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="考场数量">
-                <template slot-scope="scope">
-                    <span>{{scope.row.roomCount}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="座位数">
-                <template slot-scope="scope">
-                    <span>{{scope.row.seatCount}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="地理经度">
-                <template slot-scope="scope">
-                    <span>{{scope.row.lng}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="地理纬度">
-                <template slot-scope="scope">
-                    <span>{{scope.row.lat}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="交通">
-                <template slot-scope="scope">
-                    <span>{{scope.row.traffic}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="创建人">
-                <template slot-scope="scope">
-                    <span>{{scope.row.createBy}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column align="center" label="创建时间">
-                <template slot-scope="scope">
-                    <span>{{scope.row.createTime}}</span>
-                </template>
-            </el-table-column>
+  <div class="app-container calendar-list-container">
+    <div class="filter-container">
+      <el-form inline>
+        <el-form-item label="考点名称：">
+          <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item"
+          placeholder="模糊查询" v-model="listQuery.nodeName">
+        </el-input>
+      </el-form-item>
+      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">搜索
+      </el-button>
+      <el-button v-if="mt_examNode_add" class="filter-item" style="margin-left: 10px;" @click="handleCreate"
+      type="primary" icon="el-icon-plus">添加
+    </el-button>
+  </el-form>
+</div>
+<el-table :key='tableKey' :data="list" v-loading.body="listLoading" element-loading-text="正在加载..." border fit
+highlight-current-row style="width: 99%">
+<el-table-column align="center" label="所属省份">
+  <template slot-scope="scope">
+    <span>{{scope.row.provinceName}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="所属城市">
+  <template slot-scope="scope">
+    <span>{{scope.row.cityName}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="考点名称">
+  <template slot-scope="scope">
+    <span>{{scope.row.nodeName}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="考点地址">
+  <template slot-scope="scope">
+    <span>{{scope.row.address}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="联系人">
+  <template slot-scope="scope">
+    <span>{{scope.row.linkerName}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="联系电话">
+  <template slot-scope="scope">
+    <span>{{scope.row.linkerPhone}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="考场数量">
+  <template slot-scope="scope">
+    <span>{{scope.row.roomCount}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="座位数">
+  <template slot-scope="scope">
+    <span>{{scope.row.seatCount}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="地理经度">
+  <template slot-scope="scope">
+    <span>{{scope.row.lng}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="地理纬度">
+  <template slot-scope="scope">
+    <span>{{scope.row.lat}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="交通">
+  <template slot-scope="scope">
+    <span>{{scope.row.traffic}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="创建人">
+  <template slot-scope="scope">
+    <span>{{scope.row.createBy}}</span>
+  </template>
+</el-table-column>
+<el-table-column align="center" label="创建时间">
+  <template slot-scope="scope">
+    <span>{{scope.row.createTime | parseTime('{y}-{m}-{d} {h}:{i}:{mm}')}}</span>
+  </template>
+</el-table-column>
 
-            <el-table-column fixed="right" align="center" label="操作" width="150">
-                <template slot-scope="scope">
-                    <el-button v-if="mt_examNode_edit" size="small" type="success" @click="handleUpdate(scope.row)">编辑
-                    </el-button>
-                    <el-button v-if="mt_examNode_del" size="small" type="danger" @click="deleteExamNode(scope.row)">删除
-                    </el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div v-show="!listLoading" class="pagination-container">
-            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                           :current-page.sync="listQuery.current" :page-sizes="[10,20,30,50]"
-                           :page-size="listQuery.size" layout="total, sizes, prev, pager, next, jumper"
-                           :total="total"></el-pagination>
-        </div>
-        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-            <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-                <el-form-item label="所属省份ID" prop="provinceId">
-                    <el-input v-model="form.provinceId" placeholder="请输入所属省份ID"></el-input>
-                </el-form-item>
-                <el-form-item label="所属省份名称" prop="provinceName">
-                    <el-input v-model="form.provinceName" placeholder="请输入所属省份名称"></el-input>
-                </el-form-item>
-                <el-form-item label="所属城市ID" prop="cityId">
-                    <el-input v-model="form.cityId" placeholder="请输入所属城市ID"></el-input>
-                </el-form-item>
-                <el-form-item label="所属城市名称" prop="cityName">
-                    <el-input v-model="form.cityName" placeholder="请输入所属城市名称"></el-input>
-                </el-form-item>
-                <el-form-item label="考点名称" prop="nodeName">
-                    <el-input v-model="form.nodeName" placeholder="请输入考点名称"></el-input>
-                </el-form-item>
-                <el-form-item label="考点地址" prop="address">
-                    <el-input v-model="form.address" placeholder="请输入考点地址"></el-input>
-                </el-form-item>
-                <el-form-item label="联系人" prop="linkerName">
-                    <el-input v-model="form.linkerName" placeholder="请输入联系人"></el-input>
-                </el-form-item>
-                <el-form-item label="联系电话" prop="linkerPhone">
-                    <el-input v-model="form.linkerPhone" placeholder="请输入联系电话"></el-input>
-                </el-form-item>
-                <el-form-item label="考场数量" prop="roomCount">
-                    <el-input v-model="form.roomCount" placeholder="请输入考场数量"></el-input>
-                </el-form-item>
-                <el-form-item label="座位数" prop="seatCount">
-                    <el-input v-model="form.seatCount" placeholder="请输入座位数"></el-input>
-                </el-form-item>
-                <el-form-item label="地理经度" prop="lng">
-                    <el-input v-model="form.lng" placeholder="请输入地理经度"></el-input>
-                </el-form-item>
-                <el-form-item label="地理纬度" prop="lat">
-                    <el-input v-model="form.lat" placeholder="请输入地理纬度"></el-input>
-                </el-form-item>
-                <el-form-item label="交通" prop="traffic">
-                    <el-input v-model="form.traffic" placeholder="请输入交通"></el-input>
-                </el-form-item>
-                <el-form-item label="创建人" prop="createBy">
-                    <el-input v-model="form.createBy" placeholder="请输入创建人"></el-input>
-                </el-form-item>
-                <el-form-item label="创建时间" prop="createTime">
-                    <el-input v-model="form.createTime" placeholder="请输入创建时间"></el-input>
-                </el-form-item>
-                <el-form-item label="修改人" prop="updateBy">
-                    <el-input v-model="form.updateBy" placeholder="请输入修改人"></el-input>
-                </el-form-item>
-                <el-form-item label="修改时间" prop="updateTime">
-                    <el-input v-model="form.updateTime" placeholder="请输入修改时间"></el-input>
-                </el-form-item>
-                <el-form-item label="删除状态 0-未删除 1-逻辑删除处理 2-逻辑删除完成" prop="delFlag">
-                    <el-input v-model="form.delFlag" placeholder="请输入删除状态 0-未删除 1-逻辑删除处理 2-逻辑删除完成"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="cancel('form')">取 消</el-button>
-                <el-button v-if="dialogStatus=='create'" type="primary" @click="createExamNode('form')">确 定</el-button>
-                <el-button v-else type="primary" @click="updateExamNode('form')">确 定</el-button>
-            </div>
-        </el-dialog>
-    </div>
+<el-table-column fixed="right" align="center" label="操作" width="150">
+  <template slot-scope="scope">
+    <el-button v-if="mt_examNode_edit" size="small" type="success" @click="handleUpdate(scope.row)">编辑
+    </el-button>
+    <el-button v-if="mt_examNode_del" size="small" type="danger" @click="deleteExamNode(scope.row)">删除
+    </el-button>
+  </template>
+</el-table-column>
+</el-table>
+<div v-show="!listLoading" class="pagination-container">
+  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+  :current-page.sync="listQuery.current" :page-sizes="[10,20,30,50]"
+  :page-size="listQuery.size" layout="total, sizes, prev, pager, next, jumper"
+  :total="total"></el-pagination>
+</div>
+<el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+  <el-form :model="form" :rules="rules" ref="form" label-width="110px">
+    <el-form-item label="所属省份名称" prop="provinceId">
+      <el-select v-model="form.provinceId" placeholder="==请选择==" @change="selectCityNameList(form)">
+        <el-option v-for="p in provinceNameList" :key="p.areaCode" :label="p.name" :value="p.areaCode">
+        </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="所属城市名称" prop="cityId">
+      <el-select v-model="form.cityId" placeholder="==请选择==">
+        <el-option v-for="c in cityNameList" :key="c.areaCode" :label="c.name" :value="c.areaCode">
+        </el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="考点名称" prop="nodeName">
+      <el-input v-model="form.nodeName" placeholder="请输入考点名称"></el-input>
+    </el-form-item>
+    <el-form-item label="考点地址" prop="address">
+      <el-input v-model="form.address" placeholder="请输入考点地址"></el-input>
+    </el-form-item>
+    <el-form-item label="联系人" prop="linkerName">
+      <el-input v-model="form.linkerName" placeholder="请输入联系人"></el-input>
+    </el-form-item>
+    <el-form-item label="联系电话" prop="linkerPhone">
+      <el-input v-model="form.linkerPhone" placeholder="请输入联系电话"></el-input>
+    </el-form-item>
+    <el-form-item label="考场数量" prop="roomCount">
+      <el-input v-model="form.roomCount" placeholder="请输入考场数量"></el-input>
+    </el-form-item>
+    <el-form-item label="座位数" prop="seatCount">
+      <el-input v-model="form.seatCount" placeholder="请输入座位数"></el-input>
+    </el-form-item>
+    <el-form-item label="地理经度" prop="lng">
+      <el-input v-model="form.lng" placeholder="请输入地理经度"></el-input>
+    </el-form-item>
+    <el-form-item label="地理纬度" prop="lat">
+      <el-input v-model="form.lat" placeholder="请输入地理纬度"></el-input>
+    </el-form-item>
+  </el-form>
+  <div slot="footer" class="dialog-footer">
+    <el-button @click="cancel('form')">取 消</el-button>
+    <el-button v-if="dialogStatus=='create'" type="primary" @click="createExamNode('form')">确 定</el-button>
+    <el-button v-else type="primary" @click="updateExamNode('form')">确 定</el-button>
+  </div>
+</el-dialog>
+</div>
 </template>
 
 <script>
-  import { getExamNodesByPage, addExamNode, getExamNode, delExamNode, updExamNode } from '@/api/base/examNode'
-  import { mapGetters } from 'vuex'
+import { getExamNodesByPage, addExamNode, getExamNode, delExamNode, updExamNode } from '@/api/base/examNode'
+import { getAdministrativeSelect } from '@/api/base/administrative.js'
+import { mapGetters } from 'vuex'
   import waves from '@/directive/waves/index.js' // 水波纹
   export default {
     name: 'examNode',
@@ -171,6 +156,17 @@
       waves
     },
     data() {
+      var checkLinkerPhone = (rule,value,callback) => {
+        var p = /^(1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8})|(0[0-9]{2,3}-[0-9]{6,8})|(400[0-9]{7})|(800[0-9]{7})$/
+        var z = /^0[0-9]{2,3}-[0-9]{8}$/
+        if (!value) {
+          callback(new Error('请输入联系电话'));
+        }else if(!p.test(value)){
+          callback(new Error("联系电话输入有误！"));
+        }else{
+          callback();
+        }
+      };
       return {
         form: {
           provinceId: undefined,
@@ -192,7 +188,23 @@
           updateTime: undefined,
           delFlag: undefined
         },
-        rules: {},
+        rules: {
+          nodeName: [
+          { required: true, message: '请输入考点名称', trigger: 'blur' }
+          ],
+          linkerName: [
+          { required: true, message: '请输入联系人', trigger: 'blur' }
+          ],
+          linkerPhone: [
+          { required: true,validator: checkLinkerPhone, trigger: 'blur' }
+          ],
+          roomCount: [
+          { required: true, message: '请输入考场数量', trigger: 'blur' }
+          ],
+          seatCount: [
+          { required: true, message: '请输入座位数', trigger: 'blur' }
+          ]
+        },
         list: null,
         total: null,
         listLoading: true,
@@ -210,11 +222,14 @@
           update: '编辑',
           create: '创建'
         },
-        tableKey: 0
+        tableKey: 0,
+        provinceNameList: [],
+        cityNameList: []
       }
     },
     created() {
       this.getList()
+      this.getAdministrativeList()
       this.mt_examNode_add = this.permissions['mt_examNode_add']
       this.mt_examNode_edit = this.permissions['mt_examNode_edit']
       this.mt_examNode_del = this.permissions['mt_examNode_del']
@@ -222,7 +237,7 @@
     computed: {
       ...mapGetters([
         'permissions'
-      ])
+        ])
     },
     filters: {
       statusFilter(status) {
@@ -261,6 +276,14 @@
       },
       handleUpdate(row) {
         getExamNode(row.id).then(response => {
+          getAdministrativeSelect(parseInt(row.provinceId)).then(response => {
+            this.cityNameList = response.data
+            var a;
+            for(var i = 0; i < this.cityNameList.length; i ++ ){
+              a = this.cityNameList[i].areaCode
+              this.cityNameList[i].areaCode=a.toString()
+            }
+          })
           this.form = response.data
           this.dialogFormVisible = true
           this.dialogStatus = 'update'
@@ -349,7 +372,28 @@
           updateTime: undefined,
           delFlag: undefined
         }
+      },
+      getAdministrativeList(){
+        getAdministrativeSelect(0).then(response => {
+          this.provinceNameList = response.data
+          var a;
+          for(var i = 0; i < this.provinceNameList.length; i ++ ){
+            a = this.provinceNameList[i].areaCode
+            this.provinceNameList[i].areaCode=a.toString()
+          }
+        })
+      },
+      selectCityNameList(form){
+        form.cityId = ''
+        getAdministrativeSelect(form.provinceId).then(response => {
+          this.cityNameList = response.data
+          var a;
+          for(var i = 0; i < this.cityNameList.length; i ++ ){
+            a = this.cityNameList[i].areaCode
+            this.cityNameList[i].areaCode=a.toString()
+          }
+        })
       }
     }
   }
-</script>
+  </script>
