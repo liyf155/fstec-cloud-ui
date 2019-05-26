@@ -51,7 +51,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center"
-        label="人员分配">
+        label="人员分配"> 
         <template slot-scope="scope">
           <el-button type="text"
             icon="el-icon-edit"
@@ -62,8 +62,8 @@
         label="设备分配">
         <template slot-scope="scope">
           <el-button type="text"
-            icon="el-icon-edit"
-            @click="openDeviceConfig(scope.row)"><span>0</span></el-button>
+            icon="el-icon-share"
+            @click="openDeviceConfig(scope.row)"><span></span></el-button>
         </template>
       </el-table-column>
       <el-table-column align="center"
@@ -155,7 +155,7 @@
     </el-dialog>
     <!-- 场次编排回话 -->
     <el-dialog :title="deviceConfigTitle"
-      width="80%"
+      width="60%"
       :visible.sync="deviceConfigVisible">
       <DeviceConfig :planId="currentPlanId"
         ref="deviceConfig"
@@ -290,6 +290,9 @@ export default {
       this.dialogFormVisible = true
     },
     handleUpdate (row) { 
+      getExamItemList().then(res => {
+        this.examItems = res.data
+      })
       getCheckinPlan(row.id).then(response => {
         this.form = response.data
         this.dialogFormVisible = true
@@ -380,6 +383,7 @@ export default {
       this.roundConfigVisible = true
     },
     openDeviceConfig (row) {
+      this.deviceConfigTitle = row.planName + "-设备编排"
       this.currentPlanId = row.id
       this.deviceConfigVisible = true
     },
