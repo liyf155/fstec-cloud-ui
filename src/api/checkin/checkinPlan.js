@@ -57,3 +57,14 @@ export function updCheckinPlan(obj) {
     data: obj
   })
 }
+
+/**
+ * 获取计划列表 （查询下拉框）
+ * @param
+ */
+export function getPlanIdList() {
+  return fetch({
+    url: '/checkin/checkinPlan/getPlanIdList',
+    method: 'get'
+  })
+}
