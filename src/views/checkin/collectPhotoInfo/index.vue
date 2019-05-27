@@ -6,8 +6,8 @@
           @keyup.enter.native="handleFilter"
           style="width: 200px;"
           class="filter-item"
-          placeholder="模糊查询"
-          v-model="listQuery.name"
+          placeholder="证件号"
+          v-model="listQuery.certId"
         ></el-input>
         <el-button
           class="filter-item"
@@ -17,7 +17,7 @@
           @click="handleFilter"
         >搜索</el-button>
         <el-button
-          v-if="bs_device_add"
+          v-if="ck_collectPhotoInfo_add"
           class="filter-item"
           style="margin-left: 10px;"
           @click="handleCreate"
@@ -26,17 +26,6 @@
         >添加</el-button>
       </el-form>
     </div>
-    <el-upload
-      class="upload-demo"
-      action="/base/device/upload"
-      :headers="headers"
-      :onError="uploadError"
-      :onSuccess="uploadSuccess"
-      :beforeUpload="beforeUpload"
-      :show-file-list="false"
-    >
-      <el-button class="filter-item" type="primary" icon="el-icon-upload">批量导入</el-button>
-    </el-upload>
     <el-table
       :key="tableKey"
       :data="list"
@@ -47,46 +36,41 @@
       highlight-current-row
       style="width: 99%"
     >
-      <el-table-column align="center" label="设备串号">
+      <el-table-column align="center" label="证件号">
         <template slot-scope="scope">
-          <span>{{scope.row.imeiNo}}</span>
+          <span>{{scope.row.certId}}</span>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="设备类型">
-        <template slot-scope="scope">
-          <span>{{scope.row.deviceType}}</span>
+      <el-table-column align="center" label="采集照片">
+        <template v-if="scope.row.scenePhotoPath" slot-scope="scope">
+          <div class="images" v-viewer>
+          <img v-for="item in (scope.row.scenePhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+          </div>
         </template>
       </el-table-column>
-
-      <el-table-column align="center" label="生产商">
+      <el-table-column align="center" label="上次采集时间">
         <template slot-scope="scope">
-          <span>{{scope.row.manufacturer}}</span>
+          <span>{{scope.row.lastUpdateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="状态">
+      <el-table-column align="center" label="采集时间">
         <template slot-scope="scope">
-          <span>{{scope.row.useable}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="容量(单位：G)">
-        <template slot-scope="scope">
-          <span>{{scope.row.capacity}}</span>
+          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
-            v-if="bs_device_edit"
+            v-if="ck_collectPhotoInfo_edit"
             size="small"
             type="success"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-if="bs_device_del"
+            v-if="ck_collectPhotoInfo_del"
             size="small"
             type="danger"
-            @click="deleteDevice(scope.row)"
+            @click="deleteCollectPhotoInfo(scope.row)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -104,26 +88,24 @@
     </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-        <el-form-item label="设备串号" prop="imeiNo">
-          <el-input v-model="form.imeiNo" placeholder="请输入设备串号"></el-input>
+        <el-form-item label="采集照片存放路径" prop="photoPath">
+          <el-input v-model="form.photoPath" placeholder="请输入采集照片存放路径"></el-input>
         </el-form-item>
-        <el-form-item label="设备类型" prop="deviceType">
-          <el-input v-model="form.deviceType" placeholder="请输入设备类型"></el-input>
+        <el-form-item label="上次采集照片上传时间戳" prop="lastUpdateTime">
+          <el-input v-model="form.lastUpdateTime" placeholder="请输入上次采集照片上传时间戳"></el-input>
         </el-form-item>
-        <el-form-item label="生产商" prop="manufacturer">
-          <el-input v-model="form.manufacturer" placeholder="请输入生产商"></el-input>
-        </el-form-item>
-        <el-form-item label="状态" prop="useable">
-          <el-input v-model="form.useable" placeholder="请输入状态 0 可用  1 不可用"></el-input>
-        </el-form-item>
-        <el-form-item label="容量(单位：G)" prop="capacity">
-          <el-input v-model="form.capacity" placeholder="请输入容量(单位：G)"></el-input>
+        <el-form-item label="现在采集照片上传时间戳" prop="updateTime">
+          <el-input v-model="form.updateTime" placeholder="请输入现在采集照片上传时间戳"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel('form')">取 消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createDevice('form')">确 定</el-button>
-        <el-button v-else type="primary" @click="updateDevice('form')">确 定</el-button>
+        <el-button
+          v-if="dialogStatus=='create'"
+          type="primary"
+          @click="createCollectPhotoInfo('form')"
+        >确 定</el-button>
+        <el-button v-else type="primary" @click="updateCollectPhotoInfo('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -131,31 +113,24 @@
 
 <script>
 import {
-  getDevicesByPage,
-  addDevice,
-  getDevice,
-  delDevice,
-  updDevice
-} from "@/api/base/device";
-import store from "@/store";
+  getCollectPhotoInfosByPage,
+  addCollectPhotoInfo,
+  getCollectPhotoInfo,
+  delCollectPhotoInfo,
+  updCollectPhotoInfo
+} from "@/api/checkin/collectPhotoInfo";
 import { mapGetters } from "vuex";
 import waves from "@/directive/waves/index.js"; // 水波纹
 export default {
-  name: "device",
+  name: "collectPhotoInfo",
   directives: {
     waves
   },
   data() {
     return {
       form: {
-        imeiNo: undefined,
-        deviceType: undefined,
-        manufacturer: undefined,
-        useable: undefined,
-        capacity: undefined,
-        createId: undefined,
-        createTime: undefined,
-        updateId: undefined,
+        photoPath: undefined,
+        lastUpdateTime: undefined,
         updateTime: undefined
       },
       rules: {},
@@ -165,13 +140,13 @@ export default {
       listQuery: {
         current: 1,
         size: 10,
-        name: undefined
+        certId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
-      bs_device_add: false,
-      bs_device_del: false,
-      bs_device_edit: false,
+      ck_collectPhotoInfo_add: false,
+      ck_collectPhotoInfo_del: false,
+      ck_collectPhotoInfo_edit: false,
       textMap: {
         update: "编辑",
         create: "创建"
@@ -181,17 +156,14 @@ export default {
   },
   created() {
     this.getList();
-    this.bs_device_add = this.permissions["bs_device_add"];
-    this.bs_device_edit = this.permissions["bs_device_edit"];
-    this.bs_device_del = this.permissions["bs_device_del"];
+    this.ck_collectPhotoInfo_add = this.permissions["ck_collectPhotoInfo_add"];
+    this.ck_collectPhotoInfo_edit = this.permissions[
+      "ck_collectPhotoInfo_edit"
+    ];
+    this.ck_collectPhotoInfo_del = this.permissions["ck_collectPhotoInfo_del"];
   },
   computed: {
-    ...mapGetters(["permissions"]),
-    headers() {
-      return {
-        Authorization: "Bearer " + store.getters.access_token
-      };
-    }
+    ...mapGetters(["permissions"])
   },
   filters: {
     statusFilter(status) {
@@ -205,7 +177,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getDevicesByPage(this.listQuery).then(response => {
+      getCollectPhotoInfosByPage(this.listQuery).then(response => {
         this.list = response.data.records;
         this.total = response.data.total;
         this.listLoading = false;
@@ -229,19 +201,19 @@ export default {
       this.dialogFormVisible = true;
     },
     handleUpdate(row) {
-      getDevice(row.id).then(response => {
+      getCollectPhotoInfo(row.id).then(response => {
         this.form = response.data;
         this.dialogFormVisible = true;
         this.dialogStatus = "update";
       });
     },
-    deleteDevice(row) {
+    deleteCollectPhotoInfo(row) {
       this.$confirm("此操作将永久删除数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        delDevice(row.id).then(() => {
+        delCollectPhotoInfo(row.id).then(() => {
           this.$notify({
             title: "成功",
             message: "删除成功",
@@ -253,11 +225,11 @@ export default {
         });
       });
     },
-    createDevice(formName) {
+    createCollectPhotoInfo(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
-          addDevice(this.form).then(() => {
+          addCollectPhotoInfo(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -277,12 +249,12 @@ export default {
       const set = this.$refs;
       set[formName].resetFields();
     },
-    updateDevice(formName) {
+    updateCollectPhotoInfo(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false;
-          updDevice(this.form).then(() => {
+          updCollectPhotoInfo(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -299,67 +271,10 @@ export default {
     },
     resetTemp() {
       this.form = {
-        imeiNo: undefined,
-        deviceType: undefined,
-        manufacturer: undefined,
-        useable: undefined,
-        capacity: undefined,
-        createId: undefined,
-        createTime: undefined,
-        updateId: undefined,
+        photoPath: undefined,
+        lastUpdateTime: undefined,
         updateTime: undefined
       };
-    },
-    // 上传成功后的回调
-    uploadSuccess(response) {
-      if (response.code === 1) {
-        this.$notify({
-          title: "失败",
-          message: response.msg,
-          type: "warning",
-          duration: 5000
-        });
-      } else {
-        this.$notify({
-          title: "成功",
-          message: response.msg,
-          type: "success",
-          duration: 3000
-        });
-      }
-      this.getList();
-    },
-    // 上传错误
-    uploadError(response) {
-      this.$notify({
-        title: "失败",
-        message: "上传文件失败，请检查文件内容格式是否正确",
-        type: "error",
-        duration: 3000
-      });
-    },
-    // 上传前对文件的大小的判断
-    beforeUpload(file) {
-      const extension = file.name.split(".")[1] === "xls";
-      const extension2 = file.name.split(".")[1] === "xlsx";
-      const isLt2M = file.size / 1024 / 1024 < 10;
-      if (!extension && !extension2) {
-        this.$notify({
-          title: "提示",
-          message: "上传文件要求是xls或xlsx格式",
-          type: "warning",
-          duration: 3000
-        });
-      }
-      if (!isLt2M) {
-        this.$notify({
-          title: "提示",
-          message: "上传文件大于10M，请联系管理员进行处理",
-          type: "warning",
-          duration: 3000
-        });
-      }
-      return extension || (extension2 && isLt2M);
     }
   }
 };

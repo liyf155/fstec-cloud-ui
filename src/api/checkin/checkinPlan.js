@@ -68,3 +68,14 @@ export function getPlanIdList() {
     method: 'get'
   })
 }
+
+/**
+ * 获取计划列表
+ * @param
+ */
+export function getPlanList() {
+  return fetch({
+    url: '/checkin/checkinPlan/list',
+    method: 'get'
+  })
+}
