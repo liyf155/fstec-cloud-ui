@@ -2,11 +2,15 @@
   <div class="app-container calendar-list-container">
     <div class="filter-container">
       <el-form inline>
-        <el-form-item label="计划ID：">
-          <el-select v-model="listQuery.planId" placeholder="==请选择==" clearable>
+        <el-form-item label="计划：">
+          <el-select v-model="listQuery.planId" placeholder="==请选择==" clearable @change="examPlanChange">
             <el-option v-for="p in planIdList" :key="p.id" :label="p.planName" :value="p.id">
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="证件号：">
+          <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="模糊查询" v-model="listQuery.certId">
+          </el-input>
         </el-form-item>
         <el-form-item label="设备串号：">
           <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="模糊查询" v-model="listQuery.imeiNo">
@@ -19,56 +23,58 @@
           </el-select>
         </el-form-item>
         <el-form-item label="安检时间：">
-          <el-date-picker
-          v-model="value2"
+        <el-date-picker
+          v-model="timeSegment"
           type="datetimerange"
-          value-format="timestamp"
+          value-format="yyyy-MM-dd HH:mm"
           range-separator="至"
           start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[]">
+          end-placeholder="结束日期">
         </el-date-picker>
       </el-form-item>
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">搜索</el-button>
-      <el-button v-if="ck_checkinSocket_add" class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-plus">添加
-      </el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-download" @click="download()">导出数据</el-button>
     </el-form>
   </div>
   <el-table :key='tableKey' :data="list" v-loading.body="listLoading" element-loading-text="正在加载..." border fit highlight-current-row style="width: 99%">
-    <el-table-column align="center" label="计划名称">
+    <el-table-column align="center" label="省份">
       <template slot-scope="scope">
-        <span>{{scope.row.planName}}</span>
+        <span>{{scope.row.provinceName}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="识别结果">
+    <el-table-column align="center" label="城市">
       <template slot-scope="scope">
-        <span>{{scope.row.isPass}}</span>
+        <span>{{scope.row.cityName}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="识别分数">
+    <el-table-column align="center" label="考点">
       <template slot-scope="scope">
-        <span>{{scope.row.compScore}}</span>
+        <span>{{scope.row.nodeName}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="安检时间">
+    <el-table-column align="center" label="姓名">
       <template slot-scope="scope">
-        <span>{{scope.row.verifyTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+        <span>{{scope.row.name}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="上传时间">
+    <el-table-column align="center" label="证件号">
       <template slot-scope="scope">
-        <span>{{scope.row.uploadTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+        <span>{{scope.row.certId}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="设备串号">
+    <el-table-column align="center" label="设备号">
       <template slot-scope="scope">
         <span>{{scope.row.imeiNo}}</span>
       </template>
     </el-table-column>
     <el-table-column align="center" label="数据类型">
       <template slot-scope="scope">
-        <span>{{scope.row.dataType}}</span>
+        <span>{{scope.row.dataType | dataTypeFilter}}</span>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="安检时间">
+      <template slot-scope="scope">
+        <span>{{scope.row.verifyTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
       </template>
     </el-table-column>
   </el-table>
@@ -112,7 +118,9 @@ import { mapGetters } from 'vuex';
         listQuery: {
           current: 1,
           size: 10,
-          name: undefined
+          certId: '',
+          planId: '',
+          dataType: ''
         },
         dialogFormVisible: false,
         dialogStatus: '',
@@ -140,11 +148,10 @@ import { mapGetters } from 'vuex';
           imeiNo : undefined,
           dataType : undefined
         },
-        value2:[]
+        timeSegment:[]
       }
     },
     created() {
-      this.getList();
       this.getPlanIdList();
       this.ck_checkinSocket_add = this.permissions['ck_checkinSocket_add']
       this.ck_checkinSocket_edit = this.permissions['ck_checkinSocket_edit']
@@ -162,17 +169,21 @@ import { mapGetters } from 'vuex';
           1: '锁定'
         }
         return statusMap[status]
+      },
+      dataTypeFilter(type) {
+        const typeMap = {
+          0: '人证机',
+          1: '智能抓拍机'
+        }
+        return typeMap[type]
       }
     },
     methods: {
       getList() {
         this.listLoading = true;
-        if(this.value2 != null){
-          this.listQuery.verifyTime = this.value2[0]
-          this.listQuery.endTime = this.value2[1]
-        }else{
-          this.listQuery.verifyTime=undefined
-          this.listQuery.endTime=undefined
+        if (this.timeSegment.length > 0) {
+          this.listQuery.startTime = this.timeSegment[0]
+          this.listQuery.endTime = this.timeSegment[1]
         }
         getCheckinSocketsByPage(this.listQuery).then(response => {
           this.list = response.data.records;
@@ -285,15 +296,17 @@ import { mapGetters } from 'vuex';
       },
       getPlanIdList() {
         getPlanList().then(response => {
-          console.log(response)
           this.planIdList = response.data
+          this.listQuery.planId = response.data[0].id
+          this.getList();
         })
       },
-      download(){
-        this.checkinSocketDown.planId = this.listQuery.planId
-        this.checkinSocketDown.imeiNo = this.listQuery.imeiNo
-        this.checkinSocketDown.dataType = this.listQuery.dataType
-        downloadCheckinSocket(this.checkinSocketDown).then(() => {
+      download() {
+        if (this.timeSegment.length > 0) {
+          this.listQuery.startTime = this.timeSegment[0]
+          this.listQuery.endTime = this.timeSegment[1]
+        }
+        downloadCheckinSocket(this.listQuery).then(() => {
           this.$notify({
             title: '成功',
             message: '导出成功',
@@ -308,6 +321,9 @@ import { mapGetters } from 'vuex';
             duration: 2000
           });
         })
+      },
+      examPlanChange() {
+        this.getList();
       }
     }
   }

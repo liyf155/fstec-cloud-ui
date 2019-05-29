@@ -300,9 +300,6 @@
           nodeId:[
           { required: true,message: '请选择考点', trigger: 'change' }
           ],
-          subjectId:[
-          { required: true,message: '请选择科目', trigger: 'change' }
-          ],
           sex:[
           { required: true,message: '请选择性别', trigger: 'change' }
           ],
@@ -314,9 +311,6 @@
           ],
           certId: [
           { required: true,validator: checkCertId, trigger: 'blur' }
-          ],
-          linkerPhone:[
-          { required: true,validator: checkLinkerPhone, trigger: 'blur' }
           ]
         },
         list: null,
