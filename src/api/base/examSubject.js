@@ -57,3 +57,14 @@ export function updExamSubject(obj) {
     data: obj
   })
 }
+
+/**
+ * 获取考试科目名称列表
+ * @param 
+ */
+export function getExamSubjectNameList() {
+  return fetch({
+    url: '/base/examSubject/getSubjectName',
+    method: 'get'
+  })
+}
