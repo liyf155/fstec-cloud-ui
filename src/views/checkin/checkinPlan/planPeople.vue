@@ -5,7 +5,7 @@
         <el-input @keyup.enter.native="handleFilter"
           style="width: 200px;"
           class="filter-item"
-          placeholder="模糊查询"
+          placeholder="姓名模糊查询"
           v-model="listQuery.name">
         </el-input>
         <el-button class="filter-item"
@@ -148,14 +148,18 @@
         ref="form"
         label-width="100px">
         <el-form-item label="省份名称"
-          prop="provinceName">
-          <el-input v-model="form.provinceName"
-            placeholder="请输入省份名称"></el-input>
+          prop="provinceId">
+          <el-select v-model="form.provinceId" placeholder="==请选择==" @change="selectCityNameList(form)">
+            <el-option v-for="p in provinceNameList" :key="p.areaCode" :label="p.name" :value="p.areaCode">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="城市名称"
-          prop="cityName">
-          <el-input v-model="form.cityName"
-            placeholder="请输入城市名称"></el-input>
+          prop="cityId">
+          <el-select v-model="form.cityId" placeholder="==请选择==">
+            <el-option v-for="c in cityNameList" :key="c.areaCode" :label="c.name" :value="c.areaCode">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="考点名称"
           prop="nodeName">
@@ -174,13 +178,17 @@
         </el-form-item>
         <el-form-item label="性别"
           prop="sex">
-          <el-input v-model="form.sex"
-            placeholder="请输入性别"></el-input>
+          <el-select v-model="form.sex" placeholder="==请选择==">
+            <el-option v-for="s in sexList" :key="s.value" :label="s.label" :value="s.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="岗位名称"
-          prop="postName">
-          <el-input v-model="form.postName"
-            placeholder="请输入岗位名称"></el-input>
+          prop="postId">
+          <el-select v-model="form.postId" placeholder="==请选择==">
+            <el-option v-for="p in postNameList" :key="p.id" :label="p.postName" :value="p.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="科目名称"
           prop="subjectName">
@@ -226,6 +234,8 @@
     delCheckinPeople,
     updCheckinPeople
   } from '@/api/checkin/checkinPeople'
+  import {getPostNameList} from '@/api/checkin/position'
+  import {getAdministrativeSelect} from '@/api/base/administrative.js'
   import { mapGetters } from 'vuex'
   import store from '@/store'
   import waves from '@/directive/waves/index.js' // 水波纹
@@ -240,6 +250,26 @@
       waves
     },
     data() {
+      var checkLinkerPhone = (rule,value,callback) => {
+        var p = /^((0\d{2,3}-\d{6,8})|(1[3584]\d{9}))$/
+        if (!value) {
+          callback(new Error('请输入联系电话'));
+        }else if(!p.test(value)){
+          callback(new Error("联系电话输入有误！"));
+        }else{
+          callback();
+        }
+      };
+      var checkCertId = (rule,value,callback) => {
+        var cert = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+        if(!value) {
+          callback(new Error('请输入身份证号'));
+        }else if(!cert.test(value)){
+          callback(new Error('身份证输入有误！'));
+        }else{
+          callback();
+        }
+      };
       return {
         form: {
           planId: undefined,
@@ -260,7 +290,29 @@
           remark: undefined,
           photoInfo: undefined
         },
-        rules: {},
+        rules: {
+          provinceId:[
+          { required: true,message: '请选择省份', trigger: 'change' }
+          ],
+          cityId:[
+          { required: true,message: '请选择城市', trigger: 'change' }
+          ],
+          sex:[
+          { required: true,message: '请选择性别', trigger: 'change' }
+          ],
+          postId:[
+          { required: true,message: '请选择岗位', trigger: 'change' }
+          ],
+          name:[
+          { required: true,message: '请输入姓名', trigger: 'blur' }
+          ],
+          certId: [
+          { required: true,validator: checkCertId, trigger: 'blur' }
+          ],
+          linkerPhone:[
+          { required: true,validator: checkLinkerPhone, trigger: 'blur' }
+          ]
+        },
         list: null,
         total: null,
         listLoading: true,
@@ -281,11 +333,26 @@
         tableKey: 0,
         uploadData: {
           planId: this.planId
+        },
+        postNameList: [],
+        provinceNameList: [],
+        cityNameList: [],
+        sexList: [
+        {
+          label: '男',
+          value: '男'
+        },
+        {
+          label: '女',
+          value: '女'
         }
+        ]
       }
     },
     created() {
       this.getList()
+      this.getPostName()
+      this.getAdministrativeList()
       this.ck_checkinPeople_add = this.permissions['ck_checkinPeople_add']
       this.ck_checkinPeople_edit = this.permissions['ck_checkinPeople_edit']
       this.ck_checkinPeople_del = this.permissions['ck_checkinPeople_del']
@@ -337,6 +404,14 @@
       },
       handleUpdate(row) {
         getCheckinPeople(row.id).then(response => {
+          getAdministrativeSelect(parseInt(row.provinceId)).then(response => {
+            this.cityNameList = response.data
+            var a;
+            for(var i = 0; i < this.cityNameList.length; i ++ ){
+              a = this.cityNameList[i].areaCode
+              this.cityNameList[i].areaCode=a.toString()
+            }
+          })
           this.form = response.data
           this.dialogFormVisible = true
           this.dialogStatus = 'update'
@@ -477,6 +552,32 @@
           })
         }
         return extension && isLt2M
+      },
+      getPostName(){
+        getPostNameList().then(response => {
+          this.postNameList = response.data
+        })
+      },
+      getAdministrativeList(){
+        getAdministrativeSelect(0).then(response => {
+          this.provinceNameList = response.data
+          var a;
+          for(var i = 0; i < this.provinceNameList.length; i ++ ){
+            a = this.provinceNameList[i].areaCode
+            this.provinceNameList[i].areaCode=a.toString()
+          }
+        })
+      },
+      selectCityNameList(form){
+        form.cityId = ''
+        getAdministrativeSelect(form.provinceId).then(response => {
+          this.cityNameList = response.data
+          var a;
+          for(var i = 0; i < this.cityNameList.length; i ++ ){
+            a = this.cityNameList[i].areaCode
+            this.cityNameList[i].areaCode=a.toString()
+          }
+        })
       }
     }
   }

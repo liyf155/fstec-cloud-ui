@@ -57,3 +57,13 @@ export function updPosition(obj) {
     data: obj
   })
 }
+
+/**
+ * 获取所有工作人员列表
+ */
+export function getPostNameList(){
+  return fetch({
+    url: '/checkin/position/getPostName',
+    method: 'get'
+  })
+}

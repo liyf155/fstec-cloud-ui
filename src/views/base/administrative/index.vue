@@ -94,15 +94,16 @@
 </template>
 </el-table-column>
 </el-table>
-</el-col>
-</el-row>
-
-<div v-show="!listLoading" class="pagination-container">
+<div v-show="!listLoading" class="pagination-container" style="margin-left:3%">
   <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
   :current-page.sync="listQuery.current" :page-sizes="[10,20,30,50]"
   :page-size="listQuery.size" layout="total, sizes, prev, pager, next, jumper"
   :total="total"></el-pagination>
 </div>
+</el-col>
+</el-row>
+
+
 <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
   <el-form :model="form" :rules="rules" ref="form" label-width="100px">
     <el-form-item label="父级行政代码" prop="parentCode">
@@ -239,7 +240,6 @@ import { mapGetters } from 'vuex'
       handleFilter() {
         this.listQuery.current = 1
         this.getList()
-        this.listQuery = {}
       },
       handleSizeChange(val) {
         this.listQuery.size = val
@@ -343,15 +343,13 @@ import { mapGetters } from 'vuex'
         })
       },
       getAdministrativeById(data){
-        this.listQuery={}
-        this.listQuery.parentCode = data.parentId
+        this.listQuery.parentCode = data.id
         this.listLoading = true
         getAdministrativesByPage(this.listQuery).then(response => {
           this.list = response.data.records
           this.total = response.data.total
           this.listLoading = false
         })
-        this.listQuery={}
       },
       filterNode(value, data) {
         if (!value) {
