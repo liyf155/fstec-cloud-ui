@@ -107,12 +107,6 @@
           <span>{{scope.row.remark}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center"
-        label="相片信息">
-        <template slot-scope="scope">
-          <span>{{scope.row.photoInfo}}</span>
-        </template>
-      </el-table-column>
       <el-table-column fixed="right"
         align="center"
         label="操作"
