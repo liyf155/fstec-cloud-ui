@@ -157,8 +157,7 @@ import { mapGetters } from 'vuex'
     },
     data() {
       var checkLinkerPhone = (rule,value,callback) => {
-        var p = /^(1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8})|(0[0-9]{2,3}-[0-9]{6,8})|(400[0-9]{7})|(800[0-9]{7})$/
-        var z = /^0[0-9]{2,3}-[0-9]{8}$/
+        var p = /^((0\d{2,3}-\d{6,8})|(1[3584]\d{9}))$/
         if (!value) {
           callback(new Error('请输入联系电话'));
         }else if(!p.test(value)){
