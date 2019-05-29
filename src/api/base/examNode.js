@@ -57,3 +57,14 @@ export function updExamNode(obj) {
     data: obj
   })
 }
+
+/**
+ * 获取所有考点名称
+ * @param obj
+ */
+export function getNodeNameList() {
+  return fetch({
+    url: '/base/examNode/getNodeName',
+    method: 'get'
+  })
+}

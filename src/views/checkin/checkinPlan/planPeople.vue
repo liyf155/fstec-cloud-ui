@@ -162,9 +162,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="考点名称"
-          prop="nodeName">
-          <el-input v-model="form.nodeName"
-            placeholder="请输入考点名称"></el-input>
+          prop="nodeId">
+          <el-select v-model="form.nodeId" placeholder="==请选择==">
+            <el-option v-for="n in nodeNameList" :key="n.id" :label="n.nodeName" :value="n.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="姓名"
           prop="name">
@@ -191,9 +193,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="科目名称"
-          prop="subjectName">
-          <el-input v-model="form.subjectName"
-            placeholder="请输入科目名称"></el-input>
+          prop="subjectId">
+          <el-select v-model="form.subjectId" placeholder="==请选择==">
+            <el-option v-for="s in subjectNameList" :key="s.id" :label="s.subjectName" :value="s.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="联系方式"
           prop="linkerPhone">
@@ -236,6 +240,8 @@
   } from '@/api/checkin/checkinPeople'
   import {getPostNameList} from '@/api/checkin/position'
   import {getAdministrativeSelect} from '@/api/base/administrative.js'
+  import {getNodeNameList} from '@/api/base/examNode'
+  import {getExamSubjectNameList} from '@/api/base/examSubject'
   import { mapGetters } from 'vuex'
   import store from '@/store'
   import waves from '@/directive/waves/index.js' // 水波纹
@@ -297,6 +303,12 @@
           cityId:[
           { required: true,message: '请选择城市', trigger: 'change' }
           ],
+          nodeId:[
+          { required: true,message: '请选择考点', trigger: 'change' }
+          ],
+          subjectId:[
+          { required: true,message: '请选择科目', trigger: 'change' }
+          ],
           sex:[
           { required: true,message: '请选择性别', trigger: 'change' }
           ],
@@ -346,13 +358,17 @@
           label: '女',
           value: '女'
         }
-        ]
+        ],
+        nodeNameList: [],
+        subjectNameList: []
       }
     },
     created() {
       this.getList()
       this.getPostName()
       this.getAdministrativeList()
+      this.getExamNodeName()
+      this.getExamSubject()
       this.ck_checkinPeople_add = this.permissions['ck_checkinPeople_add']
       this.ck_checkinPeople_edit = this.permissions['ck_checkinPeople_edit']
       this.ck_checkinPeople_del = this.permissions['ck_checkinPeople_del']
@@ -577,6 +593,16 @@
             a = this.cityNameList[i].areaCode
             this.cityNameList[i].areaCode=a.toString()
           }
+        })
+      },
+      getExamNodeName(){
+        getNodeNameList().then(response => {
+          this.nodeNameList = response.data
+        })
+      },
+      getExamSubject(){
+        getExamSubjectNameList().then(response => {
+          this.subjectNameList = response.data
         })
       }
     }
