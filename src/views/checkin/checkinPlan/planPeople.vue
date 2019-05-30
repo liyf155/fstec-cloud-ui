@@ -1,13 +1,23 @@
 <template>
   <div class="app-container calendar-list-container">
     <div class="filter-container">
-      <el-form>
-        <el-input @keyup.enter.native="handleFilter"
-          style="width: 200px;"
-          class="filter-item"
-          placeholder="姓名模糊查询"
-          v-model="listQuery.name">
-        </el-input>
+      <el-form inline>
+        <el-form-item label="姓名：">
+          <el-input @keyup.enter.native="handleFilter"
+            style="width: 200px;"
+            class="filter-item"
+            placeholder="模糊查询"
+            v-model="listQuery.name">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="身份证号：">
+          <el-input @keyup.enter.native="handleFilter"
+            style="width: 200px;"
+            class="filter-item"
+            placeholder="模糊查询"
+            v-model="listQuery.certId">
+          </el-input>
+        </el-form-item>
         <el-button class="filter-item"
           type="primary"
           v-waves
