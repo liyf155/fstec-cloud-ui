@@ -108,7 +108,10 @@
           <el-input v-model="form.imeiNo" placeholder="请输入设备串号"></el-input>
         </el-form-item>
         <el-form-item label="设备类型" prop="deviceType">
-          <el-input v-model="form.deviceType" placeholder="请输入设备类型"></el-input>
+          <el-select v-model="form.deviceType" placeholder="==请选择==">
+            <el-option v-for="d in deviceTypeList" :key="d.value" :label="d.label" :value="d.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="生产商" prop="manufacturer">
           <el-input v-model="form.manufacturer" placeholder="请输入生产商"></el-input>
@@ -122,8 +125,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel('form')">取 消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createDevice('form')">确 定</el-button>
-        <el-button v-else type="primary" @click="updateDevice('form')">确 定</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createDevice('form')" :disabled="disabledButton">确 定</el-button>
+        <el-button v-else type="primary" @click="updateDevice('form')" :disabled="disabledButton">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -176,7 +179,18 @@ export default {
         update: "编辑",
         create: "创建"
       },
-      tableKey: 0
+      tableKey: 0,
+      deviceTypeList:[
+      {
+        label:'人证机',
+        value:'0'
+      },
+      {
+        label:'智能抓拍机',
+        value:'1'
+      }
+      ],
+      disabledButton:false
     };
   },
   created() {
