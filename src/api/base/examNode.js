@@ -62,9 +62,9 @@ export function updExamNode(obj) {
  * 获取所有考点名称
  * @param obj
  */
-export function getNodeNameList() {
+export function getNodeNameList(cityId) {
   return fetch({
-    url: '/base/examNode/getNodeName',
+    url: '/base/examNode/getNodeName/' + cityId,
     method: 'get'
   })
 }

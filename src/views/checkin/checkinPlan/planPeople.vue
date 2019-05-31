@@ -160,7 +160,7 @@
         </el-form-item>
         <el-form-item label="城市名称"
           prop="cityId">
-          <el-select v-model="form.cityId" placeholder="==请选择==">
+          <el-select v-model="form.cityId" placeholder="==请选择==" @change="getExamNodeName(form)">
             <el-option v-for="c in cityNameList" :key="c.areaCode" :label="c.name" :value="c.areaCode">
             </el-option>
           </el-select>
@@ -254,6 +254,9 @@
     props: {
       planId: {
         default: undefined
+      },
+      itemId: {
+        default: undefined
       }
     },
     directives: {
@@ -344,6 +347,7 @@
         uploadData: {
           planId: this.planId
         },
+        itemId2: this.itemId,
         postNameList: [],
         provinceNameList: [],
         cityNameList: [],
@@ -365,7 +369,6 @@
       this.getList()
       this.getPostName()
       this.getAdministrativeList()
-      this.getExamNodeName()
       this.getExamSubject()
       this.ck_checkinPeople_add = this.permissions['ck_checkinPeople_add']
       this.ck_checkinPeople_edit = this.permissions['ck_checkinPeople_edit']
@@ -584,6 +587,8 @@
       },
       selectCityNameList(form){
         form.cityId = ''
+        form.nodeId = ''
+        this.nodeNameList={}
         getAdministrativeSelect(form.provinceId).then(response => {
           this.cityNameList = response.data
           var a;
@@ -593,13 +598,14 @@
           }
         })
       },
-      getExamNodeName(){
-        getNodeNameList().then(response => {
+      getExamNodeName(form){
+        form.nodeId = ''
+        getNodeNameList(form.cityId).then(response => {
           this.nodeNameList = response.data
         })
       },
       getExamSubject(){
-        getExamSubjectNameList().then(response => {
+        getExamSubjectNameList(this.itemId2).then(response => {
           this.subjectNameList = response.data
         })
       }
