@@ -17,7 +17,7 @@
           </el-input>
         </el-form-item>
         <el-form-item label="数据类型：">
-          <el-select v-model="listQuery.dataType" placeholder="==请选择==" clearable>
+          <el-select v-model="listQuery.dataType" placeholder="==请选择==" clearable @change="queryByDataType">
             <el-option v-for="d in dataTypeList" :key="d.value" :label="d.label" :value="d.value">
             </el-option>
           </el-select>
@@ -62,11 +62,6 @@
         <span>{{scope.row.certId}}</span>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="设备号">
-      <template slot-scope="scope">
-        <span>{{scope.row.imeiNo}}</span>
-      </template>
-    </el-table-column>
     <el-table-column align="center" label="数据类型">
       <template slot-scope="scope">
         <span>{{scope.row.dataType | dataTypeFilter}}</span>
@@ -75,6 +70,20 @@
     <el-table-column align="center" label="安检时间">
       <template slot-scope="scope">
         <span>{{scope.row.verifyTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="原照片">
+      <template v-if="scope.row.certPhotoPath" slot-scope="scope">
+        <div class="images" v-viewer>
+        <img v-for="item in (scope.row.certPhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="对比照片">
+      <template v-if="scope.row.compPhotoPath" slot-scope="scope">
+        <div class="images" v-viewer>
+        <img v-for="item in (scope.row.compPhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+        </div>
       </template>
     </el-table-column>
   </el-table>
@@ -135,11 +144,11 @@ import { mapGetters } from 'vuex';
         planIdList: null,
         dataTypeList: [
         {
-          label: 0,
+          label: '人证机',
           value: 0
         },
         {
-          label: 1,
+          label: '智能抓拍机',
           value: 1
         }
         ],
@@ -323,7 +332,10 @@ import { mapGetters } from 'vuex';
         })
       },
       examPlanChange() {
-        this.getList();
+        this.getList()
+      },
+      queryByDataType() {
+        this.getList()
       }
     }
   }
