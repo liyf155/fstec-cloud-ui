@@ -1,5 +1,6 @@
 var path = require('path')
 var baseUrl = 'http://0.0.0.0:9999'
+// var baseUrl = 'http://39.108.248.100:9999'
 module.exports = {
   build: {
     env: require('./prod.env'),

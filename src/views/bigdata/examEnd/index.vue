@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划:">
               <exam-plan @examPlanChange="getList"/>
             </el-form-item>
@@ -78,7 +78,7 @@
       </el-table-column>
       <el-table-column align="center" label="场次时间">
         <template slot-scope="scope">
-          <span>{{scope.row.roundTimeStr}}</span>
+          <span>{{scope.row.roundTimeStr | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="考场秩序">
@@ -212,8 +212,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: '不正常',
-        1: '正常'
+        0: '正常',
+        1: '不正常'
       }
       return statusMap[status]
     }

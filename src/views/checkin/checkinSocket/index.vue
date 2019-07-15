@@ -23,15 +23,15 @@
           </el-select>
         </el-form-item>
         <el-form-item label="安检时间：">
-        <el-date-picker
-          v-model="timeSegment"
-          type="datetimerange"
-          value-format="yyyy-MM-dd HH:mm"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期">
-        </el-date-picker>
-      </el-form-item>
+          <el-date-picker
+            v-model="timeSegment"
+            type="datetimerange"
+            value-format="yyyy-MM-dd HH:mm"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期">
+          </el-date-picker>
+        </el-form-item>
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">搜索</el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-download" @click="download()">导出数据</el-button>
     </el-form>
@@ -62,6 +62,16 @@
         <span>{{scope.row.certId}}</span>
       </template>
     </el-table-column>
+    <el-table-column align="center" label="科目">
+      <template slot-scope="scope">
+        <span>{{scope.row.subjectName}}</span>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="岗位">
+      <template slot-scope="scope">
+        <span>{{scope.row.postName}}</span>
+      </template>
+    </el-table-column>
     <el-table-column align="center" label="数据类型">
       <template slot-scope="scope">
         <span>{{scope.row.dataType | dataTypeFilter}}</span>
@@ -75,14 +85,14 @@
     <el-table-column align="center" label="原照片">
       <template v-if="scope.row.certPhotoPath" slot-scope="scope">
         <div class="images" v-viewer>
-        <img v-for="item in (scope.row.certPhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+        <img v-for="item in (scope.row.certPhotoPath.split(','))" :src="photoUrlHandle(scope.row, item)" :key="item" style="width: 90px;height: 100px">
         </div>
       </template>
     </el-table-column>
     <el-table-column align="center" label="对比照片">
       <template v-if="scope.row.compPhotoPath" slot-scope="scope">
         <div class="images" v-viewer>
-        <img v-for="item in (scope.row.compPhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+        <img v-for="item in (scope.row.compPhotoPath.split(','))" :src="photoUrlHandle(scope.row, item)" :key="item" style="width: 90px;height: 100px">
         </div>
       </template>
     </el-table-column>
@@ -336,6 +346,9 @@ import { mapGetters } from 'vuex';
       },
       queryByDataType() {
         this.getList()
+      },
+      photoUrlHandle(row, item) {
+        return item + "?" + row.verifyTime
       }
     }
   }

@@ -1,7 +1,13 @@
 <template>
   <div class="app-container calendar-list-container">
     <div class="filter-container">
-      <el-form>
+      <el-form inline>
+        <el-form-item label="计划：">
+          <el-select v-model="listQuery.planId" placeholder="==请选择==" clearable @change="examPlanChange">
+            <el-option v-for="p in planIdList" :key="p.id" :label="p.planName" :value="p.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-input
           @keyup.enter.native="handleFilter"
           style="width: 200px;"
@@ -16,6 +22,17 @@
           icon="el-icon-search"
           @click="handleFilter"
         >搜索</el-button>
+        <el-upload
+          class="upload-demo"
+          action="/checkin/collectSocket/importFromDt"
+          :headers="headers"
+          :data="uploadData"
+          :onError="uploadError"
+          :onSuccess="uploadSuccess"
+          :beforeUpload="beforeUpload"
+        >
+          <el-button class="filter-item" type="primary" icon="el-icon-upload">导入DT文件</el-button>
+        </el-upload>
       </el-form>
     </div>
     <el-table
@@ -53,6 +70,16 @@
           <span>{{scope.row.certId}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="科目">
+        <template slot-scope="scope">
+          <span>{{scope.row.subjectName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="岗位">
+        <template slot-scope="scope">
+          <span>{{scope.row.postName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="性别">
         <template slot-scope="scope">
           <span>{{scope.row.sex}}</span>
@@ -61,14 +88,14 @@
       <el-table-column align="center" label="证件照">
         <template v-if="scope.row.certPhoto" slot-scope="scope">
           <div class="images" v-viewer>
-          <img v-for="item in (scope.row.certPhoto.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+          <img v-for="item in (scope.row.certPhoto.split(','))" :src="photoUrlHandle(scope.row, item)" :key="item" style="width: 90px;height: 100px">
           </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="现场照片">
         <template v-if="scope.row.scenePhoto" slot-scope="scope">
           <div class="images" v-viewer>
-          <img v-for="item in (scope.row.scenePhoto.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
+          <img v-for="item in (scope.row.scenePhoto.split(','))" :src="photoUrlHandle(scope.row, item)" :key="item" style="width: 90px;height: 100px">
           </div>
         </template>
       </el-table-column>
@@ -110,7 +137,9 @@ import {
   delCollectSocket,
   updCollectSocket
 } from "@/api/checkin/collectSocket";
+import {getPlanList} from '@/api/checkin/checkinPlan'
 import { mapGetters } from "vuex";
+import store from "@/store";
 import waves from "@/directive/waves/index.js"; // 水波纹
 export default {
   name: "collectSocket",
@@ -136,10 +165,15 @@ export default {
       list: null,
       total: null,
       listLoading: true,
+      planIdList: null,
       listQuery: {
         current: 1,
         size: 10,
-        name: undefined
+        name: undefined,
+        planId: undefined
+      },
+      uploadData: {
+        planId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -154,13 +188,18 @@ export default {
     };
   },
   created() {
-    this.getList();
+    this.getPlanIdList();
     this.ck_collectSocket_add = this.permissions["ck_collectSocket_add"];
     this.ck_collectSocket_edit = this.permissions["ck_collectSocket_edit"];
     this.ck_collectSocket_del = this.permissions["ck_collectSocket_del"];
   },
   computed: {
-    ...mapGetters(["permissions"])
+    ...mapGetters(["permissions"]),
+    headers() {
+      return {
+        Authorization: "Bearer " + store.getters.access_token
+      };
+    }
   },
   filters: {
     statusFilter(status) {
@@ -281,7 +320,71 @@ export default {
         certPhoto: undefined,
         scenePhoto: undefined
       };
-    }
+    },
+    photoUrlHandle(row, item) {
+      return item + "?" + row.collectTime
+    },
+    examPlanChange() {
+      this.getList()
+    },
+    getPlanIdList() {
+      getPlanList().then(response => {
+        this.planIdList = response.data
+        this.listQuery.planId = response.data[0].id
+        this.uploadData.planId = response.data[0].id
+        this.getList();
+      })
+    },
+    // 上传成功后的回调
+    uploadSuccess(response) {
+      if (response.code === 1) {
+        this.$notify({
+          title: "提示",
+          message: response.msg,
+          type: "warning",
+          duration: 5000
+        });
+      } else {
+        this.getList();
+        this.$notify({
+          title: "成功",
+          message: response.msg,
+          type: "success",
+          duration: 3000
+        });
+      }
+    },
+    // 上传错误
+    uploadError(response) {
+      this.$notify({
+        title: "失败",
+        message: "上传文件失败，请检查文件内容格式是否正确",
+        type: "error",
+        duration: 3000
+      });
+    },
+    // 上传前对文件的大小的判断
+    beforeUpload(file) {
+      const extension = file.name.split(".")[1] === "zip";
+      const isLt2M = file.size / 1024 / 1024 < 1000;
+      if (!extension) {
+        this.$notify({
+          title: "提示",
+          message: "上传文件要求是zip格式",
+          type: "warning",
+          duration: 3000
+        });
+      }
+      if (!isLt2M) {
+        this.$notify({
+          title: "提示",
+          message: "上传文件大于10M，请联系管理员进行处理",
+          type: "warning",
+          duration: 3000
+        });
+      }
+      return extension && isLt2M;
+    },
   }
 };
 </script>

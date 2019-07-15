@@ -1,14 +1,25 @@
 <template>
   <div class="app-container calendar-list-container">
     <div class="filter-container">
-      <el-form>
-        <el-input
-          @keyup.enter.native="handleFilter"
-          style="width: 200px;"
-          class="filter-item"
-          placeholder="姓名模糊查询"
-          v-model="listQuery.name"
-        ></el-input>
+      <el-form inline>
+        <el-form-item label="姓名：">
+          <el-input
+            @keyup.enter.native="handleFilter"
+            style="width: 200px;"
+            class="filter-item"
+            placeholder="模糊查询"
+            v-model="listQuery.name"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="身份证号：">
+          <el-input
+            @keyup.enter.native="handleFilter"
+            style="width: 200px;"
+            class="filter-item"
+            placeholder="模糊查询"
+            v-model="listQuery.certId"
+          ></el-input>
+        </el-form-item>
         <el-button
           class="filter-item"
           type="primary"
@@ -144,7 +155,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="城市名称" prop="cityId">
-          <el-select v-model="form.cityId" placeholder="==请选择==">
+          <el-select v-model="form.cityId" placeholder="==请选择==" @change="getExamNodeName()">
             <el-option
               v-for="c in cityNameList"
               :key="c.areaCode"
@@ -226,6 +237,9 @@ export default {
   name: "checkinPeople",
   props: {
     planId: {
+      default: undefined
+    },
+    itemId: {
       default: undefined
     }
   },
@@ -346,6 +360,7 @@ export default {
   },
   methods: {
     getList() {
+      console.log(this.planId)
       this.listLoading = true;
       getCheckinPeoplesByPage(this.listQuery).then(response => {
         this.list = response.data.records;
@@ -369,7 +384,6 @@ export default {
       this.resetTemp();
       this.getPostName();
       this.getAdministrativeList();
-      this.getExamNodeName();
       this.getExamSubject();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
@@ -377,10 +391,9 @@ export default {
     handleUpdate(row) {
       this.getPostName();
       this.getAdministrativeList();
-      this.getExamNodeName();
       this.getExamSubject();
       getCheckinPeople(row.id).then(response => {
-        getAdministrativeSelect(parseInt(row.provinceId)).then(response => {
+        getAdministrativeSelect(row.provinceId).then(response => {
           this.cityNameList = response.data;
           var a;
           for (var i = 0; i < this.cityNameList.length; i++) {
@@ -389,6 +402,7 @@ export default {
           }
         });
         this.form = response.data;
+        this.getExamNodeName();
         this.dialogFormVisible = true;
         this.dialogStatus = "update";
       });
@@ -415,7 +429,7 @@ export default {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
-          this.form.planId = this.planId
+          this.form.planId = this.planId;
           addCheckinPeople(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
@@ -537,16 +551,18 @@ export default {
     },
     getAdministrativeList() {
       getAdministrativeSelect(0).then(response => {
-        this.provinceNameList = response.data;
+        this.provinceNameList = response.data
         var a;
-        for (var i = 0; i < this.provinceNameList.length; i++) {
-          a = this.provinceNameList[i].areaCode;
-          this.provinceNameList[i].areaCode = a.toString();
+        for(var i = 0; i < this.provinceNameList.length; i ++ ){
+          a = this.provinceNameList[i].areaCode
+          this.provinceNameList[i].areaCode=a.toString()
         }
       });
     },
     selectCityNameList(form) {
       form.cityId = "";
+      form.nodeId = "";
+      this.nodeNameList = {};
       getAdministrativeSelect(form.provinceId).then(response => {
         this.cityNameList = response.data;
         var a;
@@ -557,12 +573,12 @@ export default {
       });
     },
     getExamNodeName() {
-      getNodeNameList().then(response => {
+      getNodeNameList(this.form.cityId).then(response => {
         this.nodeNameList = response.data;
       });
     },
     getExamSubject() {
-      getExamSubjectNameList().then(response => {
+      getExamSubjectNameList(this.itemId).then(response => {
         this.subjectNameList = response.data;
       });
     }

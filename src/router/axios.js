@@ -9,7 +9,7 @@ import router from '@/router/router'
 import { serialize } from '@/util/util'
 
 // 超时时间
-axios.defaults.timeout = 30000
+axios.defaults.timeout = 60000
 // 返回其他状态吗
 axios.defaults.validateStatus = function(status) {
   return status >= 200 && status <= 500 // 默认的

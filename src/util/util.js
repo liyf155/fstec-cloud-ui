@@ -61,7 +61,8 @@ export const loadStyle = url => {
  * 设置浏览器头部标题
  */
 export const setTitle = function(title) {
-  title = title ? `${title}——考务管理平台` : '考务管理平台'
+  // title = title ? `${title}——福州鑫祥信息技术有限公司` : '福州鑫祥信息技术有限公司'
+  title = title ? `${title}——深圳峰上科技有限公司` : '深圳峰上科技有限公司'
   window.document.title = title
 }
 

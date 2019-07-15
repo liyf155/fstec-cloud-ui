@@ -373,6 +373,7 @@ export default {
     },
     updUser(formName) {
       const set = this.$refs
+      console.log(this.role)
       this.form.role = this.role
       set[formName].validate(valid => {
         if (valid) {

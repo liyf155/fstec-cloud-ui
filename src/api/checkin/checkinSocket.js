@@ -76,7 +76,7 @@ export function downloadCheckinSocket(query) {
     responseType: 'arraybuffer'
   }).then((response) => { // 处理返回的文件流
     const blob = new Blob([response], { type: 'application/x-xls' })
-    const filename = new Date().getTime() + '.xlsx'
+    const filename = new Date().getTime() + '.xls'
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
     link.download = filename

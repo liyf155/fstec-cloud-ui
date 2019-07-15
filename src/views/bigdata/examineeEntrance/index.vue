@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划:">
               <exam-plan @examPlanChange="getList"/>
             </el-form-item>

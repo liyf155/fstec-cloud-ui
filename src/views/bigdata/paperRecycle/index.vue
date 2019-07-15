@@ -9,7 +9,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item label="考点名称">
+            <el-form-item label="用户名:">
               <el-input
                 style="width:200px"
                 class="filter-item"
@@ -27,14 +27,6 @@
               icon="el-icon-search"
               @click="handleFilter"
             >搜索</el-button>
-            <el-button
-              v-if="bd_paperHandover_add"
-              class="filter-item"
-              style="margin-left: 10px;"
-              type="primary"
-              icon="el-icon-plus"
-              @click="handleCreate"
-            >添加</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -64,6 +56,16 @@
           <span>{{scope.row.baseInfo.userName}}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="联系人">
+        <template slot-scope="scope">
+          <span>{{scope.row.handOverPeople}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="联系方式">
+        <template slot-scope="scope">
+          <span>{{scope.row.linkerPhone}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="照片">
         <template v-if="scope.row.baseInfo.photos" slot-scope="scope">
           <div class="images" v-viewer>
@@ -81,29 +83,13 @@
           <span>{{scope.row.roundTimeStr | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="交接人">
-        <template slot-scope="scope">
-          <span>{{scope.row.handOverPeople}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="联系方式">
-        <template slot-scope="scope">
-          <span>{{scope.row.linkerPhone}}</span>
-        </template>
-      </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
-            v-if="bd_paperHandover_edit"
-            size="small"
-            type="success"
-            @click="handleUpdate(scope.row)"
-          >编辑</el-button>
-          <el-button
-            v-if="bd_paperHandover_del"
+            v-if="bd_paperRecycle_del"
             size="small"
             type="danger"
-            @click="deletePaperHandover(scope.row)"
+            @click="deletePaperRecycle(scope.row)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -130,21 +116,14 @@
         <el-form-item label="场次时间" prop="roundTimeStr">
           <el-input v-model="form.roundTimeStr" placeholder="请输入场次时间"></el-input>
         </el-form-item>
-        <el-form-item label="交接人" prop="handOverPeople">
-          <el-input v-model="form.handOverPeople" placeholder="请输入交接人"></el-input>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="linkerPhone">
-          <el-input v-model="form.linkerPhone" placeholder="请输入联系方式"></el-input>
+        <el-form-item label="试卷回收状态" prop="recycleStatus">
+          <el-input v-model="form.recycleStatus" placeholder="请输入考场秩序"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel('form')">取 消</el-button>
-        <el-button
-          v-if="dialogStatus=='create'"
-          type="primary"
-          @click="createPaperHandover('form')"
-        >确 定</el-button>
-        <el-button v-else type="primary" @click="updatePaperHandover('form')">确 定</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createPaperRecycle('form')">确 定</el-button>
+        <el-button v-else type="primary" @click="updatePaperRecycle('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -152,16 +131,16 @@
 
 <script>
 import {
-  getPaperHandoversByPage,
-  addPaperHandover,
-  getPaperHandover,
-  delPaperHandover,
-  updPaperHandover
-} from '@/api/bigdata/paperHandover'
+  getPaperRecyclesByPage,
+  addPaperRecycle,
+  getPaperRecycle,
+  delPaperRecycle,
+  updPaperRecycle
+} from '@/api/bigdata/paperRecycle'
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves/index.js' // 水波纹
 export default {
-  name: 'paperHandover',
+  name: 'paperRecycle',
   directives: {
     waves
   },
@@ -171,8 +150,9 @@ export default {
         baseId: undefined,
         roundId: undefined,
         roundTimeStr: undefined,
-        handOverPeople: undefined,
-        linkerPhone: undefined
+        roomOrder: undefined,
+        paperBookBind: undefined,
+        roomClosure: undefined
       },
       planId: '',
       rules: {},
@@ -186,9 +166,9 @@ export default {
       },
       dialogFormVisible: false,
       dialogStatus: '',
-      bd_paperHandover_add: false,
-      bd_paperHandover_del: false,
-      bd_paperHandover_edit: false,
+      bd_paperRecycle_add: false,
+      bd_paperRecycle_del: false,
+      bd_paperRecycle_edit: false,
       textMap: {
         update: '编辑',
         create: '创建'
@@ -197,9 +177,9 @@ export default {
     }
   },
   created() {
-    this.bd_paperHandover_add = this.permissions['bd_paperHandover_add']
-    this.bd_paperHandover_edit = this.permissions['bd_paperHandover_edit']
-    this.bd_paperHandover_del = this.permissions['bd_paperHandover_del']
+    this.bd_paperRecycle_add = this.permissions['bd_paperRecycle_add']
+    this.bd_paperRecycle_edit = this.permissions['bd_paperRecycle_edit']
+    this.bd_paperRecycle_del = this.permissions['bd_paperRecycle_del']
   },
   computed: {
     ...mapGetters(['permissions'])
@@ -207,8 +187,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: '正常',
-        1: '锁定'
+        0: '不正常',
+        1: '正常'
       }
       return statusMap[status]
     }
@@ -218,7 +198,7 @@ export default {
       this.planId = planId
       this.listQuery.planId = planId
       this.listLoading = true
-      getPaperHandoversByPage(this.listQuery).then(response => {
+      getPaperRecyclesByPage(this.listQuery).then(response => {
         this.list = response.data.records
         this.total = response.data.total
         this.listLoading = false
@@ -242,19 +222,19 @@ export default {
       this.dialogFormVisible = true
     },
     handleUpdate(row) {
-      getPaperHandover(row.id).then(response => {
+      getPaperRecycle(row.id).then(response => {
         this.form = response.data
         this.dialogFormVisible = true
         this.dialogStatus = 'update'
       })
     },
-    deletePaperHandover(row) {
+    deletePaperRecycle(row) {
       this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delPaperHandover(row.id).then(() => {
+        delPaperRecycle(row.id).then(() => {
           this.$notify({
             title: '成功',
             message: '删除成功',
@@ -266,11 +246,11 @@ export default {
         })
       })
     },
-    createPaperHandover(formName) {
+    createPaperRecycle(formName) {
       const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
-          addPaperHandover(this.form).then(() => {
+          addPaperRecycle(this.form).then(() => {
             this.dialogFormVisible = false
             this.getList(this.planId)
             this.$notify({
@@ -290,12 +270,12 @@ export default {
       const set = this.$refs
       set[formName].resetFields()
     },
-    updatePaperHandover(formName) {
+    updatePaperRecycle(formName) {
       const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false
-          updPaperHandover(this.form).then(() => {
+          updPaperRecycle(this.form).then(() => {
             this.dialogFormVisible = false
             this.getList(this.planId)
             this.$notify({
@@ -315,8 +295,9 @@ export default {
         baseId: undefined,
         roundId: undefined,
         roundTimeStr: undefined,
-        handOverPeople: undefined,
-        linkerPhone: undefined
+        roomOrder: undefined,
+        paperBookBind: undefined,
+        roomClosure: undefined
       }
     }
   }

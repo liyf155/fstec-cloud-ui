@@ -6,8 +6,8 @@
           @keyup.enter.native="handleFilter"
           style="width: 200px;"
           class="filter-item"
-          placeholder="证件号"
-          v-model="listQuery.certId"
+          placeholder="模糊查询"
+          v-model="listQuery.name"
         ></el-input>
         <el-button
           class="filter-item"
@@ -16,14 +16,14 @@
           icon="el-icon-search"
           @click="handleFilter"
         >搜索</el-button>
-        <el-button
-          v-if="ck_collectPhotoInfo_add"
+        <!-- <el-button
+          v-if="pf_examRfid_add"
           class="filter-item"
           style="margin-left: 10px;"
           @click="handleCreate"
           type="primary"
           icon="el-icon-plus"
-        >添加</el-button>
+        >添加</el-button> -->
       </el-form>
     </div>
     <el-table
@@ -36,44 +36,77 @@
       highlight-current-row
       style="width: 99%"
     >
+      <el-table-column align="center" label="考区">
+        <template slot-scope="scope">
+          <span>{{scope.row.administrativeName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="考点">
+        <template slot-scope="scope">
+          <span>{{scope.row.nodeName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="考场号" width="65">
+        <template slot-scope="scope">
+          <span>{{scope.row.roomName}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="姓名" width="65">
+        <template slot-scope="scope">
+          <span>{{scope.row.examineeName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="证件号">
         <template slot-scope="scope">
           <span>{{scope.row.certId}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="采集照片">
-        <template v-if="scope.row.scenePhotoPath" slot-scope="scope">
-          <div class="images" v-viewer>
-          <img v-for="item in (scope.row.scenePhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="上次采集时间">
+      <el-table-column align="center" label="准考证">
         <template slot-scope="scope">
-          <span>{{scope.row.lastUpdateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.examCertId}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="采集时间">
+      <el-table-column align="center" label="科目">
         <template slot-scope="scope">
-          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.subjectName}}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" align="center" label="操作" width="150">
+      <el-table-column align="center" label="考试时间">
+        <template slot-scope="scope">
+          <span>{{scope.row.beginTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="状态">
+        <template slot-scope="scope">
+          <span>{{scope.row.status | statusFilter}}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column align="center" label="操作类型">
+        <template slot-scope="scope">
+          <span>{{scope.row.handleOpt}}</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column align="center" label="描述">
+        <template slot-scope="scope">
+          <span>{{scope.row.description}}</span>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
-            v-if="ck_collectPhotoInfo_edit"
+            v-if="pf_examRfid_edit"
             size="small"
             type="success"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-if="ck_collectPhotoInfo_del"
+            v-if="pf_examRfid_del"
             size="small"
             type="danger"
-            @click="deleteCollectPhotoInfo(scope.row)"
+            @click="deleteExamRfid(scope.row)"
           >删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     <div v-show="!listLoading" class="pagination-container">
       <el-pagination
@@ -88,24 +121,23 @@
     </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-        <el-form-item label="采集照片存放路径" prop="photoPath">
-          <el-input v-model="form.photoPath" placeholder="请输入采集照片存放路径"></el-input>
+        <el-form-item label="RFID编码" prop="rfidCode">
+          <el-input v-model="form.rfidCode" placeholder="请输入RFID编码"></el-input>
         </el-form-item>
-        <el-form-item label="上次采集照片上传时间戳" prop="lastUpdateTime">
-          <el-input v-model="form.lastUpdateTime" placeholder="请输入上次采集照片上传时间戳"></el-input>
+        <el-form-item label="状态" prop="status">
+          <el-input v-model="form.status" placeholder="请输入状态"></el-input>
         </el-form-item>
-        <el-form-item label="现在采集照片上传时间戳" prop="updateTime">
-          <el-input v-model="form.updateTime" placeholder="请输入现在采集照片上传时间戳"></el-input>
+        <el-form-item label="操作类型" prop="handleOpt">
+          <el-input v-model="form.handleOpt" placeholder="请输入操作类型"></el-input>
+        </el-form-item>
+        <el-form-item label="描述" prop="desc">
+          <el-input v-model="form.desc" placeholder="请输入描述"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel('form')">取 消</el-button>
-        <el-button
-          v-if="dialogStatus=='create'"
-          type="primary"
-          @click="createCollectPhotoInfo('form')"
-        >确 定</el-button>
-        <el-button v-else type="primary" @click="updateCollectPhotoInfo('form')">确 定</el-button>
+        <el-button v-if="dialogStatus=='create'" type="primary" @click="createExamRfid('form')">确 定</el-button>
+        <el-button v-else type="primary" @click="updateExamRfid('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -113,25 +145,26 @@
 
 <script>
 import {
-  getCollectPhotoInfosByPage,
-  addCollectPhotoInfo,
-  getCollectPhotoInfo,
-  delCollectPhotoInfo,
-  updCollectPhotoInfo
-} from "@/api/checkin/collectPhotoInfo";
+  getExamRfidsByPage,
+  addExamRfid,
+  getExamRfid,
+  delExamRfid,
+  updExamRfid
+} from "@/api/platform/examRfid";
 import { mapGetters } from "vuex";
 import waves from "@/directive/waves/index.js"; // 水波纹
 export default {
-  name: "collectPhotoInfo",
+  name: "examRfid",
   directives: {
     waves
   },
   data() {
     return {
       form: {
-        photoPath: undefined,
-        lastUpdateTime: undefined,
-        updateTime: undefined
+        rfidCode: undefined,
+        status: undefined,
+        handleOpt: undefined,
+        desc: undefined
       },
       rules: {},
       list: null,
@@ -140,13 +173,13 @@ export default {
       listQuery: {
         current: 1,
         size: 10,
-        certId: undefined
+        name: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
-      ck_collectPhotoInfo_add: false,
-      ck_collectPhotoInfo_del: false,
-      ck_collectPhotoInfo_edit: false,
+      pf_examRfid_add: false,
+      pf_examRfid_del: false,
+      pf_examRfid_edit: false,
       textMap: {
         update: "编辑",
         create: "创建"
@@ -156,11 +189,9 @@ export default {
   },
   created() {
     this.getList();
-    this.ck_collectPhotoInfo_add = this.permissions["ck_collectPhotoInfo_add"];
-    this.ck_collectPhotoInfo_edit = this.permissions[
-      "ck_collectPhotoInfo_edit"
-    ];
-    this.ck_collectPhotoInfo_del = this.permissions["ck_collectPhotoInfo_del"];
+    this.pf_examRfid_add = this.permissions["pf_examRfid_add"];
+    this.pf_examRfid_edit = this.permissions["pf_examRfid_edit"];
+    this.pf_examRfid_del = this.permissions["pf_examRfid_del"];
   },
   computed: {
     ...mapGetters(["permissions"])
@@ -168,8 +199,8 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: "正常",
-        1: "锁定"
+        2: "正常",
+        4: "异常"
       };
       return statusMap[status];
     }
@@ -177,7 +208,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getCollectPhotoInfosByPage(this.listQuery).then(response => {
+      getExamRfidsByPage(this.listQuery).then(response => {
         this.list = response.data.records;
         this.total = response.data.total;
         this.listLoading = false;
@@ -201,19 +232,19 @@ export default {
       this.dialogFormVisible = true;
     },
     handleUpdate(row) {
-      getCollectPhotoInfo(row.id).then(response => {
+      getExamRfid(row.id).then(response => {
         this.form = response.data;
         this.dialogFormVisible = true;
         this.dialogStatus = "update";
       });
     },
-    deleteCollectPhotoInfo(row) {
+    deleteExamRfid(row) {
       this.$confirm("此操作将永久删除数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        delCollectPhotoInfo(row.id).then(() => {
+        delExamRfid(row.id).then(() => {
           this.$notify({
             title: "成功",
             message: "删除成功",
@@ -225,11 +256,11 @@ export default {
         });
       });
     },
-    createCollectPhotoInfo(formName) {
+    createExamRfid(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
-          addCollectPhotoInfo(this.form).then(() => {
+          addExamRfid(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -249,12 +280,12 @@ export default {
       const set = this.$refs;
       set[formName].resetFields();
     },
-    updateCollectPhotoInfo(formName) {
+    updateExamRfid(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false;
-          updCollectPhotoInfo(this.form).then(() => {
+          updExamRfid(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -271,11 +302,12 @@ export default {
     },
     resetTemp() {
       this.form = {
-        photoPath: undefined,
-        lastUpdateTime: undefined,
-        updateTime: undefined
+        rfidCode: undefined,
+        status: undefined,
+        handleOpt: undefined,
+        desc: undefined
       };
-    },
+    }
   }
 };
 </script>

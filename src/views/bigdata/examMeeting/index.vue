@@ -3,18 +3,18 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划:">
               <exam-plan @examPlanChange="getList"/>
             </el-form-item>
           </el-col>
           <el-col :span="5">
-            <el-form-item>
+            <el-form-item label="用户名:">
               <el-input
                 style="width:200px"
                 class="filter-item"
                 placeholder="模糊查询"
-                v-model="listQuery.name"
+                v-model="listQuery.userName"
                 @keyup.enter.native="handleFilter"
               ></el-input>
             </el-form-item>
@@ -77,7 +77,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="召开时间">
-        <template slot-scope="scope">
+        <template slot-scope="scope" v-if="scope.row.meetingTime">
           <span>{{scope.row.meetingTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>

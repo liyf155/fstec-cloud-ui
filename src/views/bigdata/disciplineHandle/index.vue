@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划:">
               <exam-plan @examPlanChange="getList"/>
             </el-form-item>
@@ -81,35 +81,9 @@
           <span>{{scope.row.subjectName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="违纪编码">
-        <template slot-scope="scope">
-          <span>{{scope.row.disciplineCode}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="违纪描述" show-overflow-tooltip>
+      <el-table-column align="center" label="违纪描述" width="300" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{scope.row.description}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="考场记录单">
-        <template v-if="scope.row.examRoomPhotos" slot-scope="scope">
-          <div class="images" v-viewer>
-            <img v-for="item in (scope.row.examRoomPhotos.split(','))" :src="item" :key="item" style="width: 40px;height: 40px">
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="准考证照片">
-        <template v-if="scope.row.examCertIdPhotos" slot-scope="scope">
-          <div class="images" v-viewer>
-            <img v-for="item in (scope.row.examCertIdPhotos.split(','))" :src="item" :key="item" style="width: 40px;height: 40px">
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="证件照片">
-        <template v-if="scope.row.certIdPhotos" slot-scope="scope">
-          <div class="images" v-viewer>
-            <img v-for="item in (scope.row.certIdPhotos.split(','))" :src="item" :key="item" style="width: 40px;height: 40px">
-          </div>
         </template>
       </el-table-column>
       <el-table-column align="center" label="其他材料">
@@ -117,36 +91,6 @@
           <div class="images" v-viewer>
             <img v-for="item in (scope.row.otherPhotos.split(','))" :src="item" :key="item" style="width: 40px;height: 40px">
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="监考老师1">
-        <template slot-scope="scope">
-          <span>{{scope.row.invigilator1}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="监考老师1手机">
-        <template slot-scope="scope">
-          <span>{{scope.row.invigilatorPhone1}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="监考老师2">
-        <template slot-scope="scope">
-          <span>{{scope.row.invigilator2}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="监考老师2手机">
-        <template slot-scope="scope">
-          <span>{{scope.row.invigilatorPhone2}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="考生联系方式">
-        <template slot-scope="scope">
-          <span>{{scope.row.examineePhone}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="考生通讯地址" show-overflow-tooltip>
-        <template slot-scope="scope">
-          <span>{{scope.row.examineeAddress}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="上报时间">

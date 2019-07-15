@@ -6,8 +6,8 @@
           @keyup.enter.native="handleFilter"
           style="width: 200px;"
           class="filter-item"
-          placeholder="证件号"
-          v-model="listQuery.certId"
+          placeholder="模糊查询"
+          v-model="listQuery.name"
         ></el-input>
         <el-button
           class="filter-item"
@@ -17,7 +17,7 @@
           @click="handleFilter"
         >搜索</el-button>
         <el-button
-          v-if="ck_collectPhotoInfo_add"
+          v-if="bd_emergencyEvent_add"
           class="filter-item"
           style="margin-left: 10px;"
           @click="handleCreate"
@@ -36,41 +36,34 @@
       highlight-current-row
       style="width: 99%"
     >
-      <el-table-column align="center" label="证件号">
+      <el-table-column align="center" label="编码" width="100">
         <template slot-scope="scope">
-          <span>{{scope.row.certId}}</span>
+          <span>{{scope.row.code}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="采集照片">
-        <template v-if="scope.row.scenePhotoPath" slot-scope="scope">
-          <div class="images" v-viewer>
-          <img v-for="item in (scope.row.scenePhotoPath.split(','))" :src="item" :key="item" style="width: 90px;height: 100px">
-          </div>
+      <el-table-column align="center" label="应急事件等级" width="200">
+        <template slot-scope="scope">
+          <span>{{scope.row.levelDesc}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="上次采集时间">
+      <el-table-column align="center" label="描述">
         <template slot-scope="scope">
-          <span>{{scope.row.lastUpdateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="采集时间">
-        <template slot-scope="scope">
-          <span>{{scope.row.updateTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{scope.row.description}}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
-            v-if="ck_collectPhotoInfo_edit"
+            v-if="bd_emergencyEvent_edit"
             size="small"
             type="success"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-if="ck_collectPhotoInfo_del"
+            v-if="bd_emergencyEvent_del"
             size="small"
             type="danger"
-            @click="deleteCollectPhotoInfo(scope.row)"
+            @click="deleteEmergencyEvent(scope.row)"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -88,14 +81,16 @@
     </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules" ref="form" label-width="100px">
-        <el-form-item label="采集照片存放路径" prop="photoPath">
-          <el-input v-model="form.photoPath" placeholder="请输入采集照片存放路径"></el-input>
+        <el-form-item label="应急事件等级" prop="levelId">
+          <el-select class="filter-item" v-model="form.levelId" filterable placeholder="请选择应急事件等级" style="width:350px">
+            <el-option v-for="item in emergencyLevels" :key="item.id" :label="item.description" :value="item.id"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="上次采集照片上传时间戳" prop="lastUpdateTime">
-          <el-input v-model="form.lastUpdateTime" placeholder="请输入上次采集照片上传时间戳"></el-input>
+        <el-form-item label="编码" prop="code">
+          <el-input v-model="form.code" placeholder="请输入编码"></el-input>
         </el-form-item>
-        <el-form-item label="现在采集照片上传时间戳" prop="updateTime">
-          <el-input v-model="form.updateTime" placeholder="请输入现在采集照片上传时间戳"></el-input>
+        <el-form-item label="描述" prop="description">
+          <el-input type="textarea" :rows="3" v-model="form.description" placeholder="请输入描述"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -103,9 +98,9 @@
         <el-button
           v-if="dialogStatus=='create'"
           type="primary"
-          @click="createCollectPhotoInfo('form')"
+          @click="createEmergencyEvent('form')"
         >确 定</el-button>
-        <el-button v-else type="primary" @click="updateCollectPhotoInfo('form')">确 定</el-button>
+        <el-button v-else type="primary" @click="updateEmergencyEvent('form')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -113,54 +108,58 @@
 
 <script>
 import {
-  getCollectPhotoInfosByPage,
-  addCollectPhotoInfo,
-  getCollectPhotoInfo,
-  delCollectPhotoInfo,
-  updCollectPhotoInfo
-} from "@/api/checkin/collectPhotoInfo";
+  getEmergencyEventsByPage,
+  addEmergencyEvent,
+  getEmergencyEvent,
+  delEmergencyEvent,
+  updEmergencyEvent
+} from "@/api/bigdata/emergencyEvent";
+import {
+  getEmergencyLevelList
+} from "@/api/bigdata/emergencyLevel";
 import { mapGetters } from "vuex";
 import waves from "@/directive/waves/index.js"; // 水波纹
 export default {
-  name: "collectPhotoInfo",
+  name: "emergencyEvent",
   directives: {
     waves
   },
   data() {
     return {
       form: {
-        photoPath: undefined,
-        lastUpdateTime: undefined,
-        updateTime: undefined
+        code: undefined,
+        description: undefined,
+        levelId: undefined
       },
-      rules: {},
+      rules: {
+        
+      },
       list: null,
       total: null,
       listLoading: true,
       listQuery: {
         current: 1,
         size: 10,
-        certId: undefined
+        name: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
-      ck_collectPhotoInfo_add: false,
-      ck_collectPhotoInfo_del: false,
-      ck_collectPhotoInfo_edit: false,
+      bd_emergencyEvent_add: false,
+      bd_emergencyEvent_del: false,
+      bd_emergencyEvent_edit: false,
       textMap: {
         update: "编辑",
         create: "创建"
       },
-      tableKey: 0
+      tableKey: 0,
+      emergencyLevels: []
     };
   },
   created() {
     this.getList();
-    this.ck_collectPhotoInfo_add = this.permissions["ck_collectPhotoInfo_add"];
-    this.ck_collectPhotoInfo_edit = this.permissions[
-      "ck_collectPhotoInfo_edit"
-    ];
-    this.ck_collectPhotoInfo_del = this.permissions["ck_collectPhotoInfo_del"];
+    this.bd_emergencyEvent_add = this.permissions["bd_emergencyEvent_add"];
+    this.bd_emergencyEvent_edit = this.permissions["bd_emergencyEvent_edit"];
+    this.bd_emergencyEvent_del = this.permissions["bd_emergencyEvent_del"];
   },
   computed: {
     ...mapGetters(["permissions"])
@@ -177,7 +176,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      getCollectPhotoInfosByPage(this.listQuery).then(response => {
+      getEmergencyEventsByPage(this.listQuery).then(response => {
         this.list = response.data.records;
         this.total = response.data.total;
         this.listLoading = false;
@@ -197,23 +196,24 @@ export default {
     },
     handleCreate() {
       this.resetTemp();
+      this.getEmergencyLevels();
       this.dialogStatus = "create";
       this.dialogFormVisible = true;
     },
     handleUpdate(row) {
-      getCollectPhotoInfo(row.id).then(response => {
+      getEmergencyEvent(row.id).then(response => {
         this.form = response.data;
         this.dialogFormVisible = true;
         this.dialogStatus = "update";
       });
     },
-    deleteCollectPhotoInfo(row) {
+    deleteEmergencyEvent(row) {
       this.$confirm("此操作将永久删除数据, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        delCollectPhotoInfo(row.id).then(() => {
+        delEmergencyEvent(row.id).then(() => {
           this.$notify({
             title: "成功",
             message: "删除成功",
@@ -225,11 +225,11 @@ export default {
         });
       });
     },
-    createCollectPhotoInfo(formName) {
+    createEmergencyEvent(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
-          addCollectPhotoInfo(this.form).then(() => {
+          addEmergencyEvent(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -249,12 +249,12 @@ export default {
       const set = this.$refs;
       set[formName].resetFields();
     },
-    updateCollectPhotoInfo(formName) {
+    updateEmergencyEvent(formName) {
       const set = this.$refs;
       set[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false;
-          updCollectPhotoInfo(this.form).then(() => {
+          updEmergencyEvent(this.form).then(() => {
             this.dialogFormVisible = false;
             this.getList();
             this.$notify({
@@ -271,11 +271,16 @@ export default {
     },
     resetTemp() {
       this.form = {
-        photoPath: undefined,
-        lastUpdateTime: undefined,
-        updateTime: undefined
+        code: undefined,
+        description: undefined,
+        levelId: undefined
       };
     },
+    getEmergencyLevels() {
+      getEmergencyLevelList().then(res => {
+        this.emergencyLevels = res.data;
+      });
+    }
   }
 };
 </script>

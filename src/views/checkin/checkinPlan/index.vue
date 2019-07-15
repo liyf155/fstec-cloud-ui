@@ -164,7 +164,7 @@
   </div>
   <div v-else>
     <!-- 考生编辑会话 -->
-    <PlanPeople :planId="currentPlanId"
+    <PlanPeople :planId="currentPlanId" :itemId = "currentItemId"
       @closePlanPeopleDialog="closePlanPeopleDialog"
       ref="planPeopleClient"></PlanPeople>
   </div>
@@ -233,6 +233,7 @@ export default {
       },
       tableKey: 0,
       currentPlanId: '',
+      currentItemId: '',
       examItems: [],
       roundConfigVisible: false,
       roundConfigTitle: '场次编辑',
@@ -371,10 +372,12 @@ export default {
     },
     handlePlanPeople (row) {
       this.currentPlanId = row.id
+      this.currentItemId = row.itemId
       this.planPeopleDialogVisible = true
     },
     closePlanPeopleDialog () {
       this.currentPlanId = ''
+      this.currentItemId = ''
       this.planPeopleDialogVisible = false
       this.getList()
     },

@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划:">
               <exam-plan @examPlanChange="getList"/>
             </el-form-item>
@@ -75,7 +75,7 @@
       </el-table-column>
       <el-table-column align="center" label="开考情况">
         <template slot-scope="scope">
-          <span>{{scope.row.startStatus}}</span>
+          <span>{{scope.row.startStatus | statusFilter}}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
@@ -187,7 +187,7 @@ export default {
     statusFilter(status) {
       const statusMap = {
         0: '正常',
-        1: '锁定'
+        1: '不正常'
       }
       return statusMap[status]
     }

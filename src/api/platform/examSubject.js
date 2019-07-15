@@ -6,7 +6,7 @@ import fetch from '@/router/axios'
  */
 export function getExamSubjectsByPage(query) {
   return fetch({
-    url: '/base/examSubject/page',
+    url: '/platform/examSubject/page',
     method: 'get',
     params: query
   })
@@ -18,7 +18,7 @@ export function getExamSubjectsByPage(query) {
  */
 export function addExamSubject(obj) {
   return fetch({
-    url: '/base/examSubject',
+    url: '/platform/examSubject',
     method: 'post',
     data: obj
   })
@@ -30,7 +30,7 @@ export function addExamSubject(obj) {
  */
 export function getExamSubject(id) {
   return fetch({
-    url: '/base/examSubject/' + id,
+    url: '/platform/examSubject/' + id,
     method: 'get'
   })
 }
@@ -41,7 +41,7 @@ export function getExamSubject(id) {
  */
 export function delExamSubject(id) {
   return fetch({
-    url: '/base/examSubject/' + id,
+    url: '/platform/examSubject/' + id,
     method: 'delete'
   })
 }
@@ -52,19 +52,8 @@ export function delExamSubject(id) {
  */
 export function updExamSubject(obj) {
   return fetch({
-    url: '/base/examSubject',
+    url: '/platform/examSubject',
     method: 'put',
     data: obj
-  })
-}
-
-/**
- * 获取考试科目名称列表
- * @param 
- */
-export function getExamSubjectNameList(itemId) {
-  return fetch({
-    url: '/base/examSubject/getSubjectName/' + itemId,
-    method: 'get'
   })
 }
