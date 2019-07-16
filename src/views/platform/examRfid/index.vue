@@ -2,6 +2,18 @@
   <div class="app-container calendar-list-container">
     <div class="filter-container">
       <el-form>
+        <el-col :span="8">
+          <el-form-item label="考试计划:">
+            <exam-plan @examPlanChange="getList"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <el-form-item label="考点:">
+            <el-select class="filter-item" v-model="nodeId" clearable placeholder="=== 考 点 ===" @change="examNodeChange" style="width:350px">
+              <el-option v-for="node in examNodes" :key="node.id" :label="node.nodeName" :value="node.id"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
         <el-input
           @keyup.enter.native="handleFilter"
           style="width: 200px;"
@@ -151,6 +163,9 @@ import {
   delExamRfid,
   updExamRfid
 } from "@/api/platform/examRfid";
+import {
+  getPlanNodesByPage
+} from "@/api/platform/planNode";
 import { mapGetters } from "vuex";
 import waves from "@/directive/waves/index.js"; // 水波纹
 export default {
@@ -166,6 +181,8 @@ export default {
         handleOpt: undefined,
         desc: undefined
       },
+      planId: '',
+      nodeId: '',
       rules: {},
       list: null,
       total: null,
@@ -184,11 +201,11 @@ export default {
         update: "编辑",
         create: "创建"
       },
-      tableKey: 0
+      tableKey: 0,
+      examNodes: []
     };
   },
   created() {
-    this.getList();
     this.pf_examRfid_add = this.permissions["pf_examRfid_add"];
     this.pf_examRfid_edit = this.permissions["pf_examRfid_edit"];
     this.pf_examRfid_del = this.permissions["pf_examRfid_del"];
@@ -206,25 +223,31 @@ export default {
     }
   },
   methods: {
-    getList() {
+    getList(planId) {
+      this.planId = planId
+      this.listQuery.planId = planId
+      if (this.nodeId) {
+        this.listQuery.nodeId = this.nodeId
+      }
       this.listLoading = true;
       getExamRfidsByPage(this.listQuery).then(response => {
         this.list = response.data.records;
         this.total = response.data.total;
         this.listLoading = false;
       });
+      this.getPlanNodes();
     },
     handleFilter() {
       this.listQuery.current = 1;
-      this.getList();
+      this.getList(this.planId)
     },
     handleSizeChange(val) {
       this.listQuery.size = val;
-      this.getList();
+      this.getList(this.planId)
     },
     handleCurrentChange(val) {
       this.listQuery.current = val;
-      this.getList();
+      this.getList(this.planId)
     },
     handleCreate() {
       this.resetTemp();
@@ -262,7 +285,7 @@ export default {
         if (valid) {
           addExamRfid(this.form).then(() => {
             this.dialogFormVisible = false;
-            this.getList();
+            this.getList(this.planId);
             this.$notify({
               title: "成功",
               message: "创建成功",
@@ -287,7 +310,7 @@ export default {
           this.dialogFormVisible = false;
           updExamRfid(this.form).then(() => {
             this.dialogFormVisible = false;
-            this.getList();
+            this.getList(this.planId);
             this.$notify({
               title: "成功",
               message: "更新成功",
@@ -307,6 +330,21 @@ export default {
         handleOpt: undefined,
         desc: undefined
       };
+    },
+    getPlanNodes() {
+      const query = {
+        current: 1,
+        size: 1000,
+        planId: this.planId
+      }
+      getPlanNodesByPage(query).then(res => {
+        if (res.data) {
+          this.examNodes = res.data.records
+        }
+      })
+    },
+    examNodeChange() {
+      this.getList(this.planId)
     }
   }
 };

@@ -71,14 +71,19 @@
           </div>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="上报人">
+        <template slot-scope="scope">
+          <span>{{scope.row.reportPeople}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="上报时间">
         <template slot-scope="scope" v-if="scope.row.reportTime">
           <span>{{scope.row.reportTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="上报人员">
+      <el-table-column align="center" label="上报内容" show-overflow-tooltip>
         <template slot-scope="scope">
-          <span>{{scope.row.reportPeople}}</span>
+          <span>{{scope.row.description}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="处理状态">
