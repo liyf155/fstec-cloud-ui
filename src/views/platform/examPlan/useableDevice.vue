@@ -79,7 +79,7 @@
 import {
   addPlanDevice,
   getUseableDevicePage
-} from '@/api/checkin/planDevice'
+} from '@/api/platform/planDevice'
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves/index.js' // 水波纹
 export default {

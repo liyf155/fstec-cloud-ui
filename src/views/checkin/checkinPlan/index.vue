@@ -145,20 +145,22 @@
           @click="updateCheckinPlan('form')">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 场次编排回话 -->
+    <!-- 场次编排会话 -->
     <el-dialog :title="roundConfigTitle"
       width="50%"
+      :before-close="closeRoundConfig"
       :visible.sync="roundConfigVisible">
       <RoundConfig :planId="currentPlanId"
-        ref="roundConfig"
+        ref="RoundConfig"
         @page="getList"></RoundConfig>
     </el-dialog>
-    <!-- 场次编排回话 -->
+    <!-- 设备配置会话 -->
     <el-dialog :title="deviceConfigTitle"
       width="60%"
+      :before-close="closeDeviceConfigDialog"
       :visible.sync="deviceConfigVisible">
       <DeviceConfig :planId="currentPlanId"
-        ref="deviceConfig"
+        ref="DeviceConfig"
         @page="getList"></DeviceConfig>
     </el-dialog>
   </div>
@@ -185,7 +187,7 @@ export default {
   directives: {
     waves
   },
-  data () {
+  data() {
     return {
       form: {
         planName: undefined,
@@ -241,7 +243,7 @@ export default {
       deviceConfigTitle: '设备编排'
     }
   },
-  created () {
+  created() {
     this.getList()
     this.ck_checkinPlan_add = this.permissions['ck_checkinPlan_add']
     this.ck_checkinPlan_edit = this.permissions['ck_checkinPlan_edit']
@@ -253,7 +255,7 @@ export default {
     ])
   },
   filters: {
-    statusFilter (status) {
+    statusFilter(status) {
       const statusMap = {
         0: '正常',
         1: '锁定'
@@ -262,7 +264,7 @@ export default {
     }
   },
   methods: {
-    getList () {
+    getList() {
       this.listLoading = true
       getCheckinPlansByPage(this.listQuery).then(response => {
         this.list = response.data.records
@@ -270,19 +272,19 @@ export default {
         this.listLoading = false
       })
     },
-    handleFilter () {
+    handleFilter() {
       this.listQuery.current = 1
       this.getList()
     },
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       this.listQuery.size = val
       this.getList()
     },
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       this.listQuery.current = val
       this.getList()
     },
-    handleCreate () {
+    handleCreate() {
       this.resetTemp()
       getExamItemList().then(res => {
         this.examItems = res.data
@@ -290,7 +292,7 @@ export default {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
     },
-    handleUpdate (row) { 
+    handleUpdate(row) {
       getExamItemList().then(res => {
         this.examItems = res.data
       })
@@ -300,7 +302,7 @@ export default {
         this.dialogStatus = 'update'
       })
     },
-    deleteCheckinPlan (row) {
+    deleteCheckinPlan(row) {
       this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -318,7 +320,7 @@ export default {
         })
       })
     },
-    createCheckinPlan (formName) {
+    createCheckinPlan(formName) {
       const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
@@ -337,12 +339,12 @@ export default {
         }
       })
     },
-    cancel (formName) {
+    cancel(formName) {
       this.dialogFormVisible = false
       const set = this.$refs
       set[formName].resetFields()
     },
-    updateCheckinPlan (formName) {
+    updateCheckinPlan(formName) {
       const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
@@ -362,7 +364,7 @@ export default {
         }
       })
     },
-    resetTemp () {
+    resetTemp() {
       this.form = {
         planName: undefined,
         roundCount: undefined,
@@ -370,31 +372,38 @@ export default {
         peopleCount: undefined
       }
     },
-    handlePlanPeople (row) {
+    handlePlanPeople(row) {
       this.currentPlanId = row.id
       this.currentItemId = row.itemId
       this.planPeopleDialogVisible = true
     },
-    closePlanPeopleDialog () {
+    closePlanPeopleDialog() {
       this.currentPlanId = ''
       this.currentItemId = ''
       this.planPeopleDialogVisible = false
       this.getList()
     },
-    openRoundConfig (row) {
+    openRoundConfig(row) {
       this.currentPlanId = row.id
       this.roundConfigVisible = true
+      this.$refs.RoundConfig.getList(row.id)
     },
-    openDeviceConfig (row) {
-      this.deviceConfigTitle = row.planName + "-设备编排"
+    closeRoundConfig() {
+      this.roundConfigVisible = false
+      this.currentPlanId = ''
+      this.getList()
+    },
+    openDeviceConfig(row) {
+      this.deviceConfigTitle = row.planName + '-设备编排'
       this.currentPlanId = row.id
       this.deviceConfigVisible = true
+      this.$refs.DeviceConfig.initTab()
     },
-    closeDeviceConfigDialog () {
+    closeDeviceConfigDialog() {
       this.currentPlanId = ''
       this.deviceConfigVisible = false
       this.getList()
-    },
+    }
   }
 }
 </script>

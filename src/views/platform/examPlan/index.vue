@@ -32,6 +32,14 @@
           <el-button type="text" icon="el-icon-edit" @click="handlePlanExaminee(scope.row)"><span>{{scope.row.examineeCount}}</span></el-button>
         </template>
       </el-table-column>
+      <el-table-column align="center"
+        label="设备分配">
+        <template slot-scope="scope">
+          <el-button type="text"
+            icon="el-icon-share"
+            @click="openDeviceConfig(scope.row)"><span></span></el-button>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="安装日期" width="150px">
         <template slot-scope="scope">
           <span>{{scope.row.installDate | parseTime('{y}-{m}-{d}')}}</span>
@@ -70,6 +78,14 @@
         <el-button v-else type="primary" @click="updateExamPlan('form')">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 设备配置会话 -->
+    <el-dialog :title="deviceConfigTitle"
+      width="60%"
+      :visible.sync="deviceConfigVisible">
+      <DeviceConfig :planId="currentPlanId"
+        ref="DeviceConfig"
+        @page="getList"></DeviceConfig>
+    </el-dialog>
   </div>
   <div v-else>
     <!-- 考生编辑会话 -->
@@ -90,7 +106,8 @@ import waves from '@/directive/waves/index.js' // 水波纹
 export default {
   name: 'examPlan',
   components: {
-    'PlanExaminee': () => import('./planExaminee')
+    'PlanExaminee': () => import('./planExaminee'),
+    'DeviceConfig': () => import('./deviceConfig')
   },
   directives: {
     waves
@@ -136,7 +153,10 @@ export default {
         update: '编辑',
         create: '创建'
       },
-      tableKey: 0
+      tableKey: 0,
+      currentPlanId: '',
+      deviceConfigVisible: false,
+      deviceConfigTitle: '设备编排'
     }
   },
   created() {
@@ -282,6 +302,12 @@ export default {
       this.currentPlanId = ''
       this.planExamineeDialogVisible = false
       this.getList()
+    },
+    openDeviceConfig(row) {
+      this.deviceConfigTitle = row.planName + '-设备编排'
+      this.currentPlanId = row.id
+      this.deviceConfigVisible = true
+      this.$refs.DeviceConfig.getAllocatedExamNodes(row.id)
     }
   }
 }

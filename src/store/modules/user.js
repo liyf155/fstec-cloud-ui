@@ -44,7 +44,7 @@ const user = {
           key: '1234567887654321',
           param: ['password']
         })
-
+        // const user = userInfo
         loginByUsername(user.username, user.password, user.code, user.randomStr).then(response => {
           commit('SET_ACCESS_TOKEN', response.access_token)
           commit('SET_REFRESH_TOKEN', response.refresh_token)

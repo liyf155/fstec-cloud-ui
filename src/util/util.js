@@ -62,7 +62,7 @@ export const loadStyle = url => {
  */
 export const setTitle = function(title) {
   // title = title ? `${title}——福州鑫祥信息技术有限公司` : '福州鑫祥信息技术有限公司'
-  title = title ? `${title}——深圳峰上科技有限公司` : '深圳峰上科技有限公司'
+  title = title ? `${title}——广西正安考试服务有限公司` : '广西正安考试服务有限公司'
   window.document.title = title
 }
 

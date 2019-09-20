@@ -105,9 +105,9 @@
           <span>{{scope.row.linkerPhone}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="备注">
+      <el-table-column align="center" label="报名号">
         <template slot-scope="scope">
-          <span>{{scope.row.remark}}</span>
+          <span>{{scope.row.serialNo}}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
@@ -198,8 +198,8 @@
         <el-form-item label="联系方式" prop="linkerPhone">
           <el-input v-model="form.linkerPhone" placeholder="请输入联系方式"></el-input>
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注"></el-input>
+        <el-form-item label="报名号" prop="serialNo">
+          <el-input v-model="form.serialNo" placeholder="请输入报名号"></el-input>
         </el-form-item>
         <el-form-item label="相片信息" prop="photoInfo">
           <el-input v-model="form.photoInfo" placeholder="请输入相片信息"></el-input>
@@ -225,16 +225,16 @@ import {
   getCheckinPeople,
   delCheckinPeople,
   updCheckinPeople
-} from "@/api/checkin/checkinPeople";
-import { getPostNameList } from "@/api/checkin/position";
-import { getAdministrativeSelect } from "@/api/base/administrative.js";
-import { getNodeNameList } from "@/api/base/examNode";
-import { getExamSubjectNameList } from "@/api/base/examSubject";
-import { mapGetters } from "vuex";
-import store from "@/store";
-import waves from "@/directive/waves/index.js"; // 水波纹
+} from '@/api/checkin/checkinPeople'
+import { getPostNameList } from '@/api/checkin/position'
+import { getAdministrativeSelect } from '@/api/base/administrative.js'
+import { getNodeNameList } from '@/api/base/examNode'
+import { getExamSubjectNameList } from '@/api/base/examSubject'
+import { mapGetters } from 'vuex'
+import store from '@/store'
+import waves from '@/directive/waves/index.js' // 水波纹
 export default {
-  name: "checkinPeople",
+  name: 'checkinPeople',
   props: {
     planId: {
       default: undefined
@@ -247,26 +247,26 @@ export default {
     waves
   },
   data() {
-    var checkLinkerPhone = (rule, value, callback) => {
-      var p = /^((0\d{2,3}-\d{6,8})|(1[3584]\d{9}))$/;
-      if (!value) {
-        callback(new Error("请输入联系电话"));
-      } else if (!p.test(value)) {
-        callback(new Error("联系电话输入有误！"));
-      } else {
-        callback();
-      }
-    };
+    // var checkLinkerPhone = (rule, value, callback) => {
+    //   var p = /^((0\d{2,3}-\d{6,8})|(1[3584]\d{9}))$/
+    //   if (!value) {
+    //     callback(new Error('请输入联系电话'))
+    //   } else if (!p.test(value)) {
+    //     callback(new Error('联系电话输入有误！'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     var checkCertId = (rule, value, callback) => {
-      var cert = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+      var cert = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
       if (!value) {
-        callback(new Error("请输入身份证号"));
+        callback(new Error('请输入身份证号'))
       } else if (!cert.test(value)) {
-        callback(new Error("身份证输入有误！"));
+        callback(new Error('身份证输入有误！'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       form: {
         planId: undefined,
@@ -285,17 +285,18 @@ export default {
         subjectName: undefined,
         linkerPhone: undefined,
         remark: undefined,
-        photoInfo: undefined
+        photoInfo: undefined,
+        serialNo: undefined
       },
       rules: {
         provinceId: [
-          { required: true, message: "请选择省份", trigger: "change" }
+          { required: true, message: '请选择省份', trigger: 'change' }
         ],
-        cityId: [{ required: true, message: "请选择城市", trigger: "change" }],
-        nodeId: [{ required: true, message: "请选择考点", trigger: "change" }],
-        postId: [{ required: true, message: "请选择岗位", trigger: "change" }],
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        certId: [{ required: true, validator: checkCertId, trigger: "blur" }]
+        cityId: [{ required: true, message: '请选择城市', trigger: 'change' }],
+        nodeId: [{ required: true, message: '请选择考点', trigger: 'change' }],
+        postId: [{ required: true, message: '请选择岗位', trigger: 'change' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        certId: [{ required: true, validator: checkCertId, trigger: 'blur' }]
       },
       list: null,
       total: null,
@@ -306,13 +307,13 @@ export default {
         name: undefined
       },
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       ck_checkinPeople_add: false,
       ck_checkinPeople_del: false,
       ck_checkinPeople_edit: false,
       textMap: {
-        update: "编辑",
-        create: "创建"
+        update: '编辑',
+        create: '创建'
       },
       tableKey: 0,
       uploadData: {
@@ -323,152 +324,152 @@ export default {
       cityNameList: [],
       sexList: [
         {
-          label: "男",
-          value: "男"
+          label: '男',
+          value: '男'
         },
         {
-          label: "女",
-          value: "女"
+          label: '女',
+          value: '女'
         }
       ],
       nodeNameList: [],
       subjectNameList: []
-    };
+    }
   },
   created() {
-    this.getList();
-    this.ck_checkinPeople_add = this.permissions["ck_checkinPeople_add"];
-    this.ck_checkinPeople_edit = this.permissions["ck_checkinPeople_edit"];
-    this.ck_checkinPeople_del = this.permissions["ck_checkinPeople_del"];
+    this.getList()
+    this.ck_checkinPeople_add = this.permissions['ck_checkinPeople_add']
+    this.ck_checkinPeople_edit = this.permissions['ck_checkinPeople_edit']
+    this.ck_checkinPeople_del = this.permissions['ck_checkinPeople_del']
   },
   computed: {
-    ...mapGetters(["permissions"]),
+    ...mapGetters(['permissions']),
     headers() {
       return {
-        Authorization: "Bearer " + store.getters.access_token
-      };
+        Authorization: 'Bearer ' + store.getters.access_token
+      }
     }
   },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        0: "正常",
-        1: "锁定"
-      };
-      return statusMap[status];
+        0: '正常',
+        1: '锁定'
+      }
+      return statusMap[status]
     }
   },
   methods: {
     getList() {
-      console.log(this.planId)
-      this.listLoading = true;
+      this.listLoading = true
+      this.listQuery.planId = this.planId
       getCheckinPeoplesByPage(this.listQuery).then(response => {
-        this.list = response.data.records;
-        this.total = response.data.total;
-        this.listLoading = false;
-      });
+        this.list = response.data.records
+        this.total = response.data.total
+        this.listLoading = false
+      })
     },
     handleFilter() {
-      this.listQuery.current = 1;
-      this.getList();
+      this.listQuery.current = 1
+      this.getList()
     },
     handleSizeChange(val) {
-      this.listQuery.size = val;
-      this.getList();
+      this.listQuery.size = val
+      this.getList()
     },
     handleCurrentChange(val) {
-      this.listQuery.current = val;
-      this.getList();
+      this.listQuery.current = val
+      this.getList()
     },
     handleCreate() {
-      this.resetTemp();
-      this.getPostName();
-      this.getAdministrativeList();
-      this.getExamSubject();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.getPostName()
+      this.getAdministrativeList()
+      this.getExamSubject()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
     },
     handleUpdate(row) {
-      this.getPostName();
-      this.getAdministrativeList();
-      this.getExamSubject();
+      this.getPostName()
+      this.getAdministrativeList()
+      this.getExamSubject()
       getCheckinPeople(row.id).then(response => {
         getAdministrativeSelect(row.provinceId).then(response => {
-          this.cityNameList = response.data;
-          var a;
+          this.cityNameList = response.data
+          var a
           for (var i = 0; i < this.cityNameList.length; i++) {
-            a = this.cityNameList[i].areaCode;
-            this.cityNameList[i].areaCode = a.toString();
+            a = this.cityNameList[i].areaCode
+            this.cityNameList[i].areaCode = a.toString()
           }
-        });
-        this.form = response.data;
-        this.getExamNodeName();
-        this.dialogFormVisible = true;
-        this.dialogStatus = "update";
-      });
+        })
+        this.form = response.data
+        this.getExamNodeName()
+        this.dialogFormVisible = true
+        this.dialogStatus = 'update'
+      })
     },
     deleteCheckinPeople(row) {
-      this.$confirm("此操作将永久删除数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         delCheckinPeople(row.id).then(() => {
           this.$notify({
-            title: "成功",
-            message: "删除成功",
-            type: "success",
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
             duration: 2000
-          });
-          const index = this.list.indexOf(row);
-          this.list.splice(index, 1);
-        });
-      });
+          })
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+        })
+      })
     },
     createCheckinPeople(formName) {
-      const set = this.$refs;
+      const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
-          this.form.planId = this.planId;
+          this.form.planId = this.planId
           addCheckinPeople(this.form).then(() => {
-            this.dialogFormVisible = false;
-            this.getList();
+            this.dialogFormVisible = false
+            this.getList()
             this.$notify({
-              title: "成功",
-              message: "创建成功",
-              type: "success",
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     cancel(formName) {
-      this.dialogFormVisible = false;
-      const set = this.$refs;
-      set[formName].resetFields();
+      this.dialogFormVisible = false
+      const set = this.$refs
+      set[formName].resetFields()
     },
     updateCheckinPeople(formName) {
-      const set = this.$refs;
+      const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
-          this.dialogFormVisible = false;
+          this.dialogFormVisible = false
           updCheckinPeople(this.form).then(() => {
-            this.dialogFormVisible = false;
-            this.getList();
+            this.dialogFormVisible = false
+            this.getList()
             this.$notify({
-              title: "成功",
-              message: "更新成功",
-              type: "success",
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     resetTemp() {
       this.form = {
@@ -488,100 +489,101 @@ export default {
         subjectName: undefined,
         linkerPhone: undefined,
         remark: undefined,
-        photoInfo: undefined
-      };
+        photoInfo: undefined,
+        serialNo: undefined
+      }
     },
     backToPlanPage() {
-      this.$emit("closePlanPeopleDialog");
+      this.$emit('closePlanPeopleDialog')
     },
     // 上传成功后的回调
     uploadSuccess(response) {
       if (response.code === 1) {
         this.$notify({
-          title: "提示",
+          title: '提示',
           message: response.msg,
-          type: "warning",
+          type: 'warning',
           duration: 5000
-        });
+        })
       } else {
-        this.getList();
+        this.getList()
         this.$notify({
-          title: "成功",
+          title: '成功',
           message: response.msg,
-          type: "success",
+          type: 'success',
           duration: 3000
-        });
+        })
       }
     },
     // 上传错误
     uploadError(response) {
       this.$notify({
-        title: "失败",
-        message: "上传文件失败，请检查文件内容格式是否正确",
-        type: "error",
+        title: '失败',
+        message: '上传文件失败，请检查文件内容格式是否正确',
+        type: 'error',
         duration: 3000
-      });
+      })
     },
     // 上传前对文件的大小的判断
     beforeUpload(file) {
-      const extension = file.name.split(".")[1] === "xlsx";
-      const isLt2M = file.size / 1024 / 1024 < 10;
+      const extension = file.name.split('.')[1] === 'xlsx'
+      const isLt2M = file.size / 1024 / 1024 < 10
       if (!extension) {
         this.$notify({
-          title: "提示",
-          message: "上传文件要求是Excel格式",
-          type: "warning",
+          title: '提示',
+          message: '上传文件要求是Excel格式',
+          type: 'warning',
           duration: 3000
-        });
+        })
       }
       if (!isLt2M) {
         this.$notify({
-          title: "提示",
-          message: "上传文件大于10M，请联系管理员进行处理",
-          type: "warning",
+          title: '提示',
+          message: '上传文件大于10M，请联系管理员进行处理',
+          type: 'warning',
           duration: 3000
-        });
+        })
       }
-      return extension && isLt2M;
+      return extension && isLt2M
     },
     getPostName() {
       getPostNameList().then(response => {
-        this.postNameList = response.data;
-      });
+        this.postNameList = response.data
+      })
     },
     getAdministrativeList() {
       getAdministrativeSelect(0).then(response => {
         this.provinceNameList = response.data
-        var a;
-        for(var i = 0; i < this.provinceNameList.length; i ++ ){
+        var a
+        for (var i = 0; i < this.provinceNameList.length; i++) {
           a = this.provinceNameList[i].areaCode
-          this.provinceNameList[i].areaCode=a.toString()
+          this.provinceNameList[i].areaCode = a.toString()
         }
-      });
+      })
     },
     selectCityNameList(form) {
-      form.cityId = "";
-      form.nodeId = "";
-      this.nodeNameList = {};
+      form.cityId = ''
+      form.nodeId = ''
+      this.nodeNameList = {}
       getAdministrativeSelect(form.provinceId).then(response => {
-        this.cityNameList = response.data;
-        var a;
+        this.cityNameList = response.data
+        var a
         for (var i = 0; i < this.cityNameList.length; i++) {
-          a = this.cityNameList[i].areaCode;
-          this.cityNameList[i].areaCode = a.toString();
+          a = this.cityNameList[i].areaCode
+          this.cityNameList[i].areaCode = a.toString()
         }
-      });
+      })
     },
     getExamNodeName() {
       getNodeNameList(this.form.cityId).then(response => {
-        this.nodeNameList = response.data;
-      });
+        this.nodeNameList = response.data
+      })
     },
     getExamSubject() {
       getExamSubjectNameList(this.itemId).then(response => {
-        this.subjectNameList = response.data;
-      });
+        this.subjectNameList = response.data
+      })
     }
   }
-};
+}
 </script>

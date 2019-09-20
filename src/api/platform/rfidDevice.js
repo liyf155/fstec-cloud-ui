@@ -4,9 +4,9 @@ import fetch from '@/router/axios'
  * 分页获取数据
  * @param query
  */
-export function getPositionsByPage(query) {
+export function getDevicesByPage(query) {
   return fetch({
-    url: '/checkin/position/page',
+    url: '/platform/rfidDevice/page',
     method: 'get',
     params: query
   })
@@ -16,9 +16,9 @@ export function getPositionsByPage(query) {
  * 添加对象
  * @param obj
  */
-export function addPosition(obj) {
+export function addDevice(obj) {
   return fetch({
-    url: '/checkin/position',
+    url: '/platform/rfidDevice',
     method: 'post',
     data: obj
   })
@@ -28,9 +28,9 @@ export function addPosition(obj) {
  * 通过ID获取对象
  * @param id
  */
-export function getPosition(id) {
+export function getDevice(id) {
   return fetch({
-    url: '/checkin/position/' + id,
+    url: '/platform/rfidDevice/' + id,
     method: 'get'
   })
 }
@@ -39,9 +39,9 @@ export function getPosition(id) {
  * 通过ID删除对象
  * @param row
  */
-export function delPosition(id) {
+export function delDevice(id) {
   return fetch({
-    url: '/checkin/position/' + id,
+    url: '/platform/rfidDevice/' + id,
     method: 'delete'
   })
 }
@@ -50,20 +50,10 @@ export function delPosition(id) {
  * 更新对象
  * @param obj
  */
-export function updPosition(obj) {
+export function updDevice(obj) {
   return fetch({
-    url: '/checkin/position',
+    url: '/platform/rfidDevice',
     method: 'put',
     data: obj
-  })
-}
-
-/**
- * 获取所有工作人员列表
- */
-export function getPostNameList() {
-  return fetch({
-    url: '/checkin/position/getPostName',
-    method: 'get'
   })
 }

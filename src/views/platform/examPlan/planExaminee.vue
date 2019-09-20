@@ -4,6 +4,7 @@
       <el-input @keyup.enter.native="handleFilter" style="width: 200px;" class="filter-item" placeholder="考生姓名" v-model="listQuery.examineeName"></el-input>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" v-waves icon="el-icon-search" @click="handleFilter">搜索</el-button>
       <el-button v-if="pf_planExaminee_add" class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-plus">添加</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-download" @click="exportRfidCodeToExcel()">导出RFID</el-button>
       <el-button class="filter-item" type="info" icon="el-icon-back" @click="backToExamPlanPage">返回</el-button>
       <el-upload v-if="pf_planExaminee_edit" class="upload-demo" action="/platform/planExaminee/importExamineeFromExcel" :headers="headers" :data="uploadData" :onError="uploadError" :onSuccess="uploadSuccess" :beforeUpload="beforeUpload">
         <el-button class="filter-item" type="primary" icon="el-icon-upload">批量导入</el-button>
@@ -108,7 +109,8 @@ import {
   addPlanExaminee,
   getPlanExaminee,
   delPlanExaminee,
-  updPlanExaminee
+  updPlanExaminee,
+  exportRfidCode
 } from '@/api/platform/planExaminee'
 import { mapGetters } from 'vuex'
 import store from '@/store'
@@ -363,6 +365,26 @@ export default {
         })
       }
       return extension && isLt2M
+    },
+    exportRfidCodeToExcel() {
+      var cond = {
+        planId: this.planId
+      }
+      exportRfidCode(cond).then(() => {
+        this.$notify({
+          title: '成功',
+          message: '导出成功',
+          type: 'success',
+          duration: 2000
+        })
+      }).catch(() => {
+        this.$notify({
+          title: '失败',
+          message: '导出失败',
+          type: 'error',
+          duration: 2000
+        })
+      })
     }
   }
 }

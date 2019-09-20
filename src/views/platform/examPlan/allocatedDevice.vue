@@ -6,7 +6,7 @@
           style="width: 200px;"
           class="filter-item"
           placeholder="模糊查询"
-          v-model="listQuery.imeiNo">
+          v-model="listQuery.name">
         </el-input>
         <el-button class="filter-item"
           type="primary"
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { getPlanDevicesByPage, addPlanDevice, getPlanDevice, delPlanDevice, updPlanDevice } from '@/api/checkin/planDevice'
+import { getPlanDevicesByPage, addPlanDevice, getPlanDevice, delPlanDevice, updPlanDevice } from '@/api/platform/planDevice'
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves/index.js' // 水波纹
 export default {

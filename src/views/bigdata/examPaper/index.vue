@@ -93,6 +93,18 @@
           <span>{{scope.row.recycleStatus | recycleStatusFilter}}</span>
         </template>
       </el-table-column>
+
+      <el-table-column align="center" label="出库人">
+        <template slot-scope="scope">
+          <span>{{scope.row.outerName}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="回收人">
+        <template slot-scope="scope">
+          <span>{{scope.row.recyclerName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button

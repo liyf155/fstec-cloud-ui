@@ -89,7 +89,7 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-            this.refreshCode()
+            // this.refreshCode()
             this.$store.commit('ADD_TAG', this.tagWel)
             this.$router.push({ path: this.tagWel.value })
           }).catch(() => {

@@ -7,7 +7,7 @@
           style="width: 200px;"
           class="filter-item"
           placeholder="模糊查询"
-          v-model="listQuery.imeiNo"
+          v-model="listQuery.name"
         ></el-input>
         <el-button
           class="filter-item"
@@ -17,7 +17,7 @@
           @click="handleFilter"
         >搜索</el-button>
         <el-button
-          v-if="bs_device_add"
+          v-if="pf_device_add"
           class="filter-item"
           style="margin-left: 10px;"
           @click="handleCreate"
@@ -28,7 +28,7 @@
     </div>
     <el-upload
       class="upload-demo"
-      action="/base/device/upload"
+      action="/platform/rfidDevice/upload"
       :headers="headers"
       :onError="uploadError"
       :onSuccess="uploadSuccess"
@@ -77,13 +77,13 @@
       <el-table-column fixed="right" align="center" label="操作" width="150">
         <template slot-scope="scope">
           <el-button
-            v-if="bs_device_edit"
+            v-if="pf_device_edit"
             size="small"
             type="success"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-if="bs_device_del"
+            v-if="pf_device_del"
             size="small"
             type="danger"
             @click="deleteDevice(scope.row)"
@@ -139,7 +139,7 @@ import {
   getDevice,
   delDevice,
   updDevice
-} from '@/api/base/device'
+} from '@/api/platform/rfidDevice'
 import store from '@/store'
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves/index.js' // 水波纹
@@ -172,9 +172,9 @@ export default {
       },
       dialogFormVisible: false,
       dialogStatus: '',
-      bs_device_add: false,
-      bs_device_del: false,
-      bs_device_edit: false,
+      pf_device_add: false,
+      pf_device_del: false,
+      pf_device_edit: false,
       textMap: {
         update: '编辑',
         create: '创建'
@@ -195,9 +195,9 @@ export default {
   },
   created() {
     this.getList()
-    this.bs_device_add = this.permissions['bs_device_add']
-    this.bs_device_edit = this.permissions['bs_device_edit']
-    this.bs_device_del = this.permissions['bs_device_del']
+    this.pf_device_add = this.permissions['pf_device_add']
+    this.pf_device_edit = this.permissions['pf_device_edit']
+    this.pf_device_del = this.permissions['pf_device_del']
   },
   computed: {
     ...mapGetters(['permissions']),

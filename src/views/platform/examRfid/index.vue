@@ -4,13 +4,15 @@
       <el-form>
         <el-col :span="8">
           <el-form-item label="考试计划:">
-            <exam-plan @examPlanChange="getList"/>
+            <el-select class="filter-item" v-model="planId" clearable placeholder="=== 请选择考试计划 ===" @change="examPlanChange" style="width:300px">
+              <el-option v-for="plan in examPlans" :key="plan.id" :label="plan.planName" :value="plan.id"></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="6">
           <el-form-item label="考点:">
-            <el-select class="filter-item" v-model="nodeId" clearable placeholder="=== 考 点 ===" @change="examNodeChange" style="width:350px">
-              <el-option v-for="node in examNodes" :key="node.id" :label="node.nodeName" :value="node.id"></el-option>
+            <el-select class="filter-item" v-model="nodeId" clearable placeholder="=== 请选择考点 ===" @change="examNodeChange" style="width:270px">
+              <el-option v-for="node in examNodes" :key="node.nodeId" :label="node.nodeName" :value="node.nodeId"></el-option>
             </el-select>
           </el-form-item>
         </el-col>
@@ -162,14 +164,17 @@ import {
   getExamRfid,
   delExamRfid,
   updExamRfid
-} from "@/api/platform/examRfid";
+} from '@/api/platform/examRfid'
 import {
   getPlanNodesByPage
-} from "@/api/platform/planNode";
-import { mapGetters } from "vuex";
-import waves from "@/directive/waves/index.js"; // 水波纹
+} from '@/api/platform/planNode'
+import {
+  getExamPlans
+} from '@/api/platform/examPlan'
+import { mapGetters } from 'vuex'
+import waves from '@/directive/waves/index.js' // 水波纹
 export default {
-  name: "examRfid",
+  name: 'examRfid',
   directives: {
     waves
   },
@@ -193,135 +198,137 @@ export default {
         name: undefined
       },
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       pf_examRfid_add: false,
       pf_examRfid_del: false,
       pf_examRfid_edit: false,
       textMap: {
-        update: "编辑",
-        create: "创建"
+        update: '编辑',
+        create: '创建'
       },
       tableKey: 0,
+      examPlans: [],
       examNodes: []
-    };
+    }
   },
   created() {
-    this.pf_examRfid_add = this.permissions["pf_examRfid_add"];
-    this.pf_examRfid_edit = this.permissions["pf_examRfid_edit"];
-    this.pf_examRfid_del = this.permissions["pf_examRfid_del"];
+    this.fetchExamPlans()
+    this.pf_examRfid_add = this.permissions['pf_examRfid_add']
+    this.pf_examRfid_edit = this.permissions['pf_examRfid_edit']
+    this.pf_examRfid_del = this.permissions['pf_examRfid_del']
   },
   computed: {
-    ...mapGetters(["permissions"])
+    ...mapGetters(['permissions'])
   },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        2: "正常",
-        4: "异常"
-      };
-      return statusMap[status];
+        2: '正常',
+        4: '异常'
+      }
+      return statusMap[status]
     }
   },
   methods: {
-    getList(planId) {
-      this.planId = planId
-      this.listQuery.planId = planId
+    getList() {
+      if (this.planId) {
+        this.listQuery.planId = this.planId
+      }
       if (this.nodeId) {
         this.listQuery.nodeId = this.nodeId
       }
-      this.listLoading = true;
+      this.listLoading = true
       getExamRfidsByPage(this.listQuery).then(response => {
-        this.list = response.data.records;
-        this.total = response.data.total;
-        this.listLoading = false;
-      });
-      this.getPlanNodes();
+        this.list = response.data.records
+        this.total = response.data.total
+        this.listLoading = false
+      })
     },
     handleFilter() {
-      this.listQuery.current = 1;
-      this.getList(this.planId)
+      this.listQuery.current = 1
+      this.getList()
     },
     handleSizeChange(val) {
-      this.listQuery.size = val;
-      this.getList(this.planId)
+      this.listQuery.size = val
+      this.getList()
     },
     handleCurrentChange(val) {
-      this.listQuery.current = val;
-      this.getList(this.planId)
+      this.listQuery.current = val
+      this.getList()
     },
     handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
     },
     handleUpdate(row) {
       getExamRfid(row.id).then(response => {
-        this.form = response.data;
-        this.dialogFormVisible = true;
-        this.dialogStatus = "update";
-      });
+        this.form = response.data
+        this.dialogFormVisible = true
+        this.dialogStatus = 'update'
+      })
     },
     deleteExamRfid(row) {
-      this.$confirm("此操作将永久删除数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         delExamRfid(row.id).then(() => {
           this.$notify({
-            title: "成功",
-            message: "删除成功",
-            type: "success",
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
             duration: 2000
-          });
-          const index = this.list.indexOf(row);
-          this.list.splice(index, 1);
-        });
-      });
+          })
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+        })
+      })
     },
     createExamRfid(formName) {
-      const set = this.$refs;
+      const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
           addExamRfid(this.form).then(() => {
-            this.dialogFormVisible = false;
-            this.getList(this.planId);
+            this.dialogFormVisible = false
+            this.getList(this.planId)
             this.$notify({
-              title: "成功",
-              message: "创建成功",
-              type: "success",
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     cancel(formName) {
-      this.dialogFormVisible = false;
-      const set = this.$refs;
-      set[formName].resetFields();
+      this.dialogFormVisible = false
+      const set = this.$refs
+      set[formName].resetFields()
     },
     updateExamRfid(formName) {
-      const set = this.$refs;
+      const set = this.$refs
       set[formName].validate(valid => {
         if (valid) {
-          this.dialogFormVisible = false;
+          this.dialogFormVisible = false
           updExamRfid(this.form).then(() => {
-            this.dialogFormVisible = false;
-            this.getList(this.planId);
+            this.dialogFormVisible = false
+            this.getList(this.planId)
             this.$notify({
-              title: "成功",
-              message: "更新成功",
-              type: "success",
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     resetTemp() {
       this.form = {
@@ -329,13 +336,22 @@ export default {
         status: undefined,
         handleOpt: undefined,
         desc: undefined
-      };
+      }
     },
-    getPlanNodes() {
+    fetchExamPlans() {
+      // 获取考试计划
+      getExamPlans().then(res => {
+        this.examPlans = res.data
+        this.planId = this.examPlans[0].id
+        this.examPlanChange()
+      })
+    },
+    getPlanNodes(planId) {
+      this.examNodes = []
       const query = {
         current: 1,
         size: 1000,
-        planId: this.planId
+        planId: planId
       }
       getPlanNodesByPage(query).then(res => {
         if (res.data) {
@@ -343,9 +359,14 @@ export default {
         }
       })
     },
+    examPlanChange() {
+      this.listQuery.planId = this.planId
+      this.getPlanNodes(this.planId)
+      this.getList()
+    },
     examNodeChange() {
-      this.getList(this.planId)
+      this.getList()
     }
   }
-};
+}
 </script>

@@ -20,7 +20,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { allcatedExamNodes } from '@/api/checkin/checkinPeople'
+import { allcatedExamNodes } from '@/api/platform/planExaminee'
 import waves from '@/directive/waves/index.js' // 水波纹
 export default {
   name: 'deviceConfig',
@@ -67,9 +67,6 @@ export default {
     }
   },
   methods: {
-    initTab() {
-      this.activeName = 'first'
-    },
     handleClick(tab, event) {
       if (tab.index === '0') {
         this.$refs.UseableDevice.getList(this.planId)

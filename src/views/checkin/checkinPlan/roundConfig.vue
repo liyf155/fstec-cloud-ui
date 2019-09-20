@@ -57,9 +57,9 @@
 </template>
 
 <script>
-import {getCheckinRoundsByPage, addCheckinRound, getCheckinRound, delCheckinRound, updCheckinRound} from '@/api/checkin/checkinRound';
-  import { mapGetters } from 'vuex';
-  import waves from '@/directive/waves/index.js' // 水波纹
+import { getCheckinRoundsByPage, addCheckinRound, delCheckinRound } from '@/api/checkin/checkinRound'
+import { mapGetters } from 'vuex'
+import waves from '@/directive/waves/index.js' // 水波纹
 export default {
   name: 'checkinRound',
   props: {
@@ -72,10 +72,10 @@ export default {
   },
   data() {
     return {
-      form: {     
-        planId : undefined,
-        beginTime : undefined,
-        endTime : undefined
+      form: {
+        planId: undefined,
+        beginTime: undefined,
+        endTime: undefined
       },
       rules: {},
       list: null,
@@ -97,8 +97,9 @@ export default {
     }
   },
   created() {
-    this.resetTemp();
-    this.getList()
+    // console.log(this.planId)
+    this.resetTemp()
+    this.getList(this.planId)
   },
   computed: {
     ...mapGetters([
@@ -115,21 +116,24 @@ export default {
     }
   },
   methods: {
-    getList() {
-      this.listLoading = true;
+    getList(planId) {
+      if (planId) {
+        this.listQuery.planId = planId
+      }
+      this.listLoading = true
       getCheckinRoundsByPage(this.listQuery).then(response => {
-        this.list = response.data.records;
-        this.total = response.data.total;
-        this.listLoading = false;
+        this.list = response.data.records
+        this.total = response.data.total
+        this.listLoading = false
       })
     },
     handleSizeChange(val) {
-      this.listQuery.size = val;
-      this.getList();
+      this.listQuery.size = val
+      this.getList(this.planId)
     },
     handleCurrentChange(val) {
-      this.listQuery.current = val;
-      this.getList();
+      this.listQuery.current = val
+      this.getList(this.planId)
     },
     deleteCheckinRound(row) {
       this.$confirm('此操作将永久删除数据, 是否继续?', '提示', {
@@ -143,11 +147,11 @@ export default {
             message: '删除成功',
             type: 'success',
             duration: 2000
-          });
-          const index = this.list.indexOf(row);
-          this.list.splice(index, 1);
-        });
-      });
+          })
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
+        })
+      })
     },
     createCheckinRound() {
       if (!this.roundTimeSelect) {
@@ -156,14 +160,14 @@ export default {
           message: '请选择场次的开始时间和结束时间',
           type: 'info',
           duration: 3000
-        });
-        return;
+        })
+        return
       }
       this.form.beginTime = this.roundTimeSelect[0]
       this.form.endTime = this.roundTimeSelect[1]
       this.form.planId = this.planId
       addCheckinRound(this.form).then(() => {
-        this.getList()
+        this.getList(this.planId)
         this.resetTemp()
         this.$notify({
           title: '成功',
@@ -175,10 +179,10 @@ export default {
     },
     resetTemp() {
       this.form = {
-        planId : undefined,
-        beginTime : undefined,
-        endTime : undefined                 
-      };
+        planId: undefined,
+        beginTime: undefined,
+        endTime: undefined
+      }
       this.roundTimeSelect = undefined
     }
   }

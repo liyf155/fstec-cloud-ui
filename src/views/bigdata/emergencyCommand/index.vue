@@ -185,13 +185,13 @@ import {
 } from '@/api/bigdata/emergencyCommand'
 import {
   getEmergencyLevelList
-} from "@/api/bigdata/emergencyLevel";
+} from '@/api/bigdata/emergencyLevel'
 import {
   getEmergencyEventsByPage
-} from "@/api/bigdata/emergencyEvent";
+} from '@/api/bigdata/emergencyEvent'
 import {
   getHandleByEventId
-} from "@/api/bigdata/emergencyHandle";
+} from '@/api/bigdata/emergencyHandle'
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves/index.js' // 水波纹
 export default {
@@ -216,7 +216,7 @@ export default {
         phone: undefined,
         postId: undefined,
         postName: undefined,
-        handleAdvice: undefined,
+        handleAdvice: undefined
       },
       planId: '',
       rules: {},
@@ -383,7 +383,7 @@ export default {
     handleEmergency(row) {
       this.levelId = row.levelId
       this.eventId = row.eventId
-      this.getEmergencyLevels();
+      this.getEmergencyLevels()
       this.getEmergencyEvent(row.levelId)
       this.getEmergencyHandle()
       getEmergencyCommand(row.id).then(response => {
@@ -394,11 +394,11 @@ export default {
     },
     getEmergencyLevels() {
       getEmergencyLevelList().then(res => {
-        this.emergencyLevels = res.data;
-      });
+        this.emergencyLevels = res.data
+      })
     },
     getEmergencyEvent(levelId) {
-      this.emergencyEvents = [];
+      this.emergencyEvents = []
       const query = {
         current: 1,
         size: 100,
@@ -406,14 +406,14 @@ export default {
       }
       getEmergencyEventsByPage(query).then(res => {
         this.emergencyEvents = res.data.records
-      }) 
+      })
     },
     getEmergencyHandle() {
       getHandleByEventId(this.eventId).then(res => {
         if (res.data != null) {
           this.form.handleAdvice = res.data.handleAdvice
         }
-      });
+      })
     }
   }
 }
