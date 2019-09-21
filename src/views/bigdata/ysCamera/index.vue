@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-form>
         <el-row>
-          <el-col :span="7">
+          <el-col :span="8">
             <el-form-item label="考试计划">
               <exam-plan @examPlanChange="fetchYsCamerasByPage"/>
             </el-form-item>
@@ -45,7 +45,7 @@
           <span>{{scope.row.administrativeName}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="left" label="培训机构" show-overflow-tooltip>
+      <el-table-column align="left" label="考点名称" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{scope.row.nodeName}}</span>
         </template>
@@ -94,9 +94,9 @@
     <!-- 萤石视频信息会话 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-        <el-form-item label="考点" prop="orgId">
-          <el-select class="filter-item" v-model="form.orgId" filterable placeholder="请选择考点">
-            <el-option v-for="org in organizations" :key="org.id" :label="org.orgName" :value="org.id"></el-option>
+        <el-form-item label="考点" prop="nodeId">
+          <el-select class="filter-item" v-model="form.nodeId" filterable placeholder="请选择考点">
+            <el-option v-for="item in examNodes" :key="item.nodeId" :label="item.nodeName" :value="item.nodeId"></el-option>
           </el-select>
         </el-form-item>
 
@@ -145,6 +145,7 @@
 </template>
 <script>
 import { getYsCamerasByPage, addYsCamera, getYsCamera, delYsCamera, updYsCamera, downloadExcel } from '@/api/bigdata/ysCamera'
+import { getPlanNodesByPlanId } from '@/api/platform/planNode'
 import { parseTime } from '@/util/util'
 import store from '@/store'
 import waves from '@/directive/waves/index.js' // 水波纹
@@ -230,8 +231,8 @@ export default {
       form: {
         id: '',
         planId: '',
-        orgId: '',
-        orgName: '',
+        nodeId: '',
+        nodeName: '',
         channelName: '',
         sort: 1,
         validateCode: '',
@@ -256,11 +257,11 @@ export default {
       },
       examPlans: [],
       templateName: '萤石云视频导入模板.xlsx',
-      organizations: [],
+      examNodes: [],
       administrativeId: undefined,
       administrativeName: undefined,
-      orgId: undefined,
-      orgName: undefined,
+      nodeId: undefined,
+      nodeName: undefined,
       dialogMonitorVisible: false
     }
   },
@@ -331,8 +332,8 @@ export default {
       this.form = {
         id: undefined,
         planId: this.listQuery.planId,
-        orgId: '',
-        orgName: '',
+        nodeId: '',
+        nodeName: '',
         channelName: '',
         sort: 1,
         validateCode: '',
@@ -347,13 +348,13 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
-      this.fetchOrganizations()
-      if (this.organizations) {
-        this.form.orgName = this.organizations[0].orgName
+      this.fetchPlanNodes()
+      if (this.examNodes) {
+        this.form.nodeName = this.examNodes[0].nodeName
       }
     },
     handleUpdate(row) {
-      this.fetchOrganizations()
+      this.fetchPlanNodes()
       getYsCamera(row.id).then(res => {
         this.form = res.data
         this.dialogFormVisible = true
@@ -393,6 +394,11 @@ export default {
       set[formName].validate(valid => {
         if (valid) {
           this.dialogFormVisible = false
+          this.examNodes.find((item) => {
+            if (item.nodeId === this.form.nodeId) {
+              this.form.nodeName = item.nodeName
+            }
+          })
           updYsCamera(this.form).then(() => {
             this.dialogFormVisible = false
             this.fetchYsCamerasByPage(this.planId)
@@ -508,6 +514,11 @@ export default {
     },
     showVideo(row) {
       this.dialogMonitorVisible = true
+    },
+    fetchPlanNodes() {
+      getPlanNodesByPlanId(this.planId).then((res) => {
+        this.examNodes = res.data
+      })
     }
   }
 }

@@ -9,7 +9,7 @@
       <topMenu></topMenu>
     </h1>
     <div class="top-button is-right">
-      <el-tooltip class="item" effect="dark" content="主题色" placement="bottom">
+      <!-- <el-tooltip class="item" effect="dark" content="主题色" placement="bottom">
         <span class="top-item">
           <top-theme></top-theme>
         </span>
@@ -18,7 +18,7 @@
         <span class="top-item">
           <top-lock></top-lock>
         </span>
-      </el-tooltip>
+      </el-tooltip> -->      
       <el-tooltip class="item" effect="dark" :content="isFullScren?'退出全屏':'全屏'" placement="bottom">
         <span class="top-item">
           <i :class="isFullScren?'icon-tuichuquanping':'icon-quanping'" @click="handleScreen"></i>
@@ -54,8 +54,9 @@ import { fullscreenToggel, listenfullscreen } from '@/util/util'
 import topLock from './top-lock'
 import topMenu from './top-menu'
 import topTheme from './top-theme'
+import Screenfull from '@/components/Screenfull'
 export default {
-  components: { topLock, topMenu, topTheme },
+  components: { topLock, topMenu, topTheme, Screenfull },
   name: 'top',
   data() {
     return {}

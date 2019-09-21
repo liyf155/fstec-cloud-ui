@@ -1,6 +1,6 @@
 var path = require('path')
-// var baseUrl = 'https://gxpta.examtec.cn'
-var baseUrl = 'http://0.0.0.0:9999'
+var baseUrl = 'https://gxpta.examtec.cn'
+// var baseUrl = 'http://0.0.0.0:9999'
 module.exports = {
   build: {
     env: require('./prod.env'),

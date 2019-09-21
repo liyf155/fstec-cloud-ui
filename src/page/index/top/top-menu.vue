@@ -17,11 +17,7 @@ export default {
     return {
       activeIndex: '0',
       items: [
-        {
-          label: '首页',
-          href: '/wel/index',
-          parentId: 0
-        }
+
       ]
     }
   },
